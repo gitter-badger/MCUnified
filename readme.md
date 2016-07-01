@@ -21,7 +21,7 @@ MCUnified uses json to set up Custom Modpacks which it reads and installs the mo
 {
     "name": "Name of modpack",
     "forge": 1321,
-    "mods": ["modname:12473","secondmod:1351"]
+    "mods": ["modname:12473","secondmod:1351"],
     "config": [ 
     {
         "file": "modname.txt",
