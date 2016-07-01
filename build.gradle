@@ -1,0 +1,30 @@
+group 'tk.freetobuild'
+version '0.1-Dev'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
+sourceCompatibility = 1.8
+mainClassName = "tk.freetobuild.mcunified.Main"
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile group: 'net.minidev', name: 'json-smart', version: '1.1.1'
+    compile name: 'darcula'
+    compile 'org.jsoup:jsoup:1.9.2'
+    compile 'com.google.guava:guava:14.0.1'
+    compile 'net.sf.jopt-simple:jopt-simple:4.5'
+    compile 'org.tukaani:xz:1.5'
+    compile 'net.sourceforge.argo:argo:3.7'
+    compile 'com.flowpowered:flow-nbt:1.0.0'
+}
+jar {
+    from configurations.compile.collect { zipTree it }
+    manifest.attributes 'Main-Class': 'tk.freetobuild.mcunified.Main'
+}

@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="tk.freetobuild.mcunified.gui.GuiMain">
+  <grid id="27dc6" binding="panelMain" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="562" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="7d523" layout-manager="GridBagLayout">
+        <constraints border-constraint="Center"/>
+        <properties>
+          <background color="-7366757"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="89bb2" class="javax.swing.JList" binding="instanceList">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="1.0" ipadx="50"/>
+            </constraints>
+            <properties>
+              <selectionMode value="0"/>
+            </properties>
+          </component>
+          <grid id="27adc" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="50"/>
+              </grid>
+              <gridbag weightx="1.0" weighty="1.0"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <tabbedpane id="48e31" binding="tabbedPane1" default-binding="true">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <preferred-size width="200" height="200"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <enabled value="true"/>
+                  <visible value="true"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <grid id="5253d" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <tabbedpane title="About"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="7c53c" class="javax.swing.JLabel" binding="instanceIcon">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value=""/>
+                        </properties>
+                      </component>
+                      <component id="1eae3" class="javax.swing.JLabel" binding="instanceNameLabel">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Instance Name"/>
+                        </properties>
+                      </component>
+                      <component id="48b19" class="javax.swing.JLabel" binding="instanceVersionLabel">
+                        <constraints>
+                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="false"/>
+                          <horizontalAlignment value="10"/>
+                          <horizontalTextPosition value="11"/>
+                          <text value="Version"/>
+                        </properties>
+                      </component>
+                      <scrollpane id="c18ae" binding="instanceServerListContainer">
+                        <constraints>
+                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <verticalScrollBarPolicy value="20"/>
+                        </properties>
+                        <border type="none"/>
+                        <children>
+                          <grid id="72e43" binding="instanceServerList" custom-create="true" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                            <margin top="0" left="0" bottom="0" right="0"/>
+                            <constraints/>
+                            <properties/>
+                            <border type="none"/>
+                            <children/>
+                          </grid>
+                        </children>
+                      </scrollpane>
+                    </children>
+                  </grid>
+                  <grid id="a89b2" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <tabbedpane title="Mods"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <tabbedpane id="99a07" binding="tabbedPane2" default-binding="true">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                            <preferred-size width="200" height="200"/>
+                          </grid>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <grid id="6945e" layout-manager="GridBagLayout">
+                            <constraints>
+                              <tabbedpane title="Jar Mods"/>
+                            </constraints>
+                            <properties/>
+                            <border type="none"/>
+                            <children>
+                              <component id="f6a1" class="javax.swing.JList" binding="jarModList">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                                    <preferred-size width="150" height="50"/>
+                                  </grid>
+                                  <gridbag weightx="1.0" weighty="1.0"/>
+                                </constraints>
+                                <properties>
+                                  <background color="-12302519"/>
+                                  <selectionMode value="0"/>
+                                </properties>
+                              </component>
+                              <grid id="ff1d5" binding="jarModInstallerPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
+                                <constraints>
+                                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                  <gridbag weightx="1.0" weighty="0.0"/>
+                                </constraints>
+                                <properties/>
+                                <border type="none">
+                                  <size top="5" left="0" bottom="0" right="0"/>
+                                </border>
+                                <children>
+                                  <component id="15c14" class="javax.swing.JButton" binding="installForgeButton" default-binding="true">
+                                    <constraints/>
+                                    <properties>
+                                      <horizontalAlignment value="2"/>
+                                      <text value="Install Forge"/>
+                                    </properties>
+                                  </component>
+                                  <component id="ced62" class="javax.swing.JButton" binding="addJarModButton">
+                                    <constraints/>
+                                    <properties>
+                                      <horizontalAlignment value="4"/>
+                                      <horizontalTextPosition value="11"/>
+                                      <text value="Add"/>
+                                    </properties>
+                                  </component>
+                                  <component id="f3baa" class="javax.swing.JButton" binding="disableJarModButton">
+                                    <constraints/>
+                                    <properties>
+                                      <enabled value="false"/>
+                                      <text value="Disable"/>
+                                    </properties>
+                                  </component>
+                                  <component id="b9497" class="javax.swing.JButton" binding="removeJarModButton">
+                                    <constraints/>
+                                    <properties>
+                                      <enabled value="false"/>
+                                      <horizontalAlignment value="4"/>
+                                      <text value="Remove"/>
+                                    </properties>
+                                  </component>
+                                </children>
+                              </grid>
+                              <component id="92add" class="javax.swing.JSeparator">
+                                <constraints>
+                                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="2" fill="1" indent="0" use-parent-layout="false"/>
+                                  <gridbag weightx="1.0" weighty="0.0"/>
+                                </constraints>
+                                <properties/>
+                              </component>
+                            </children>
+                          </grid>
+                          <grid id="30ee1" layout-manager="GridBagLayout">
+                            <constraints>
+                              <tabbedpane title="Loader Mods"/>
+                            </constraints>
+                            <properties/>
+                            <border type="none"/>
+                            <children>
+                              <component id="bb11a" class="javax.swing.JList" binding="loaderModList">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                                    <preferred-size width="150" height="50"/>
+                                  </grid>
+                                  <gridbag weightx="1.0" weighty="1.0"/>
+                                </constraints>
+                                <properties>
+                                  <background color="-12302519"/>
+                                  <selectionMode value="0"/>
+                                </properties>
+                              </component>
+                              <grid id="de945" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
+                                <constraints>
+                                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                  <gridbag weightx="1.0" weighty="0.0"/>
+                                </constraints>
+                                <properties/>
+                                <border type="none"/>
+                                <children>
+                                  <component id="c2ad4" class="javax.swing.JButton" binding="installButton">
+                                    <constraints/>
+                                    <properties>
+                                      <text value="Install"/>
+                                    </properties>
+                                  </component>
+                                  <component id="ca852" class="javax.swing.JButton" binding="addLoaderModButton">
+                                    <constraints/>
+                                    <properties>
+                                      <text value="Add"/>
+                                    </properties>
+                                  </component>
+                                  <component id="c7348" class="javax.swing.JButton" binding="disableLoaderModButton">
+                                    <constraints/>
+                                    <properties>
+                                      <text value="Disable"/>
+                                    </properties>
+                                  </component>
+                                  <component id="86f27" class="javax.swing.JButton" binding="removeLoaderModButton">
+                                    <constraints/>
+                                    <properties>
+                                      <text value="Remove"/>
+                                    </properties>
+                                  </component>
+                                </children>
+                              </grid>
+                              <component id="f096c" class="javax.swing.JSeparator">
+                                <constraints>
+                                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="2" fill="1" indent="0" use-parent-layout="false"/>
+                                  <gridbag weightx="1.0" weighty="0.0"/>
+                                </constraints>
+                                <properties/>
+                              </component>
+                            </children>
+                          </grid>
+                        </children>
+                      </tabbedpane>
+                    </children>
+                  </grid>
+                  <grid id="5f829" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <tabbedpane title="Worlds"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children/>
+                  </grid>
+                  <grid id="abb24" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <tabbedpane title="Options"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children/>
+                  </grid>
+                </children>
+              </tabbedpane>
+            </children>
+          </grid>
+        </children>
+      </grid>
+      <grid id="14114" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="764d" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <model>
+                <item value="Select an Account"/>
+              </model>
+            </properties>
+          </component>
+          <component id="f21e6" class="javax.swing.JButton" binding="launchButton" default-binding="true">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <enabled value="false"/>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="11"/>
+              <text value="Launch"/>
+            </properties>
+          </component>
+          <grid id="796a6" layout-manager="GridBagLayout">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="cdb20" class="javax.swing.JSeparator">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="4" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="1.0"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="395ae" class="javax.swing.JProgressBar" binding="statusProgresBar">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="e1fb7" class="javax.swing.JLabel" binding="statusLabel">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="1.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text value="Status"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+        </children>
+      </grid>
+      <toolbar id="fe35f">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="4b1ea" class="javax.swing.JLabel" binding="newLabel">
+            <constraints/>
+            <properties>
+              <text value=""/>
+              <toolTipText value="New Instance"/>
+            </properties>
+          </component>
+          <component id="4ef75" class="javax.swing.JLabel" binding="importLabel">
+            <constraints/>
+            <properties>
+              <text value=""/>
+              <toolTipText value="Import"/>
+            </properties>
+          </component>
+          <component id="8d2e1" class="javax.swing.JLabel" binding="exportLabel">
+            <constraints/>
+            <properties>
+              <text value=""/>
+              <toolTipText value="Export Instance"/>
+            </properties>
+          </component>
+          <component id="a032" class="javax.swing.JLabel" binding="removeLabel">
+            <constraints/>
+            <properties>
+              <text value=""/>
+              <toolTipText value="Remove Instance"/>
+            </properties>
+          </component>
+          <component id="55e4d" class="javax.swing.JLabel" binding="aboutLabel">
+            <constraints/>
+            <properties>
+              <horizontalAlignment value="4"/>
+              <text value=""/>
+              <toolTipText value="About"/>
+            </properties>
+          </component>
+          <component id="c47b4" class="javax.swing.JLabel" binding="accountsLabel">
+            <constraints/>
+            <properties>
+              <text value=""/>
+              <toolTipText value="Accounts"/>
+            </properties>
+          </component>
+        </children>
+      </toolbar>
+    </children>
+  </grid>
+</form>
