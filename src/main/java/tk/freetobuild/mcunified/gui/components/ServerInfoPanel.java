@@ -31,9 +31,12 @@ public class ServerInfoPanel {
             servermotd.setText("Pinging");
             playerCount.setText("<html><span style=\"text-style: italic\">Unknown</span></html>");
             new SwingWorker<PingedServerInfo, Void>() {
+                private int tries = 5;
+
                 @Override
                 protected PingedServerInfo doInBackground() throws Exception {
                     try {
+                        tries--;
                         PingedServerInfo ping = ServerPinger.pingServer(info);
                         return ping;
                     } catch (Exception ex) {
@@ -47,7 +50,9 @@ public class ServerInfoPanel {
                     try {
                         PingedServerInfo ping = get();
                         if (ping == null) {
-                            servermotd.setText("Unable to Connect.");
+                            if (tries == 0)
+                                servermotd.setText("Unable to Connect.");
+                            else execute();
                         } else {
                             servermotd.setText("<html>" + ping.getMessage() + "</html>");
                             playerCount.setText(String.format("(%d/%d)", ping.getOnlinePlayers(), ping.getMaxPlayers()));
