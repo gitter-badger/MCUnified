@@ -69,7 +69,7 @@ public class CurseModInfo {
                     CurseArtifact.ReleaseType releaseType = CurseArtifact.ReleaseType.ALPHA;
                     if(release.size()>0)
                         releaseType = CurseArtifact.ReleaseType.valueOf(release.get(0).attr("title").toUpperCase());
-                    return new CurseArtifact(id,name.text(),name.attr("href").substring(name.attr("href").lastIndexOf("/")+1),releaseType);
+                    return new CurseArtifact(id,element.select(".project-file-game-version .version-label").text(),name.text(),name.attr("href").substring(name.attr("href").lastIndexOf("/")+1),releaseType);
                 }).collect(Collectors.toList()));
                 if(doc.select("a[rel=\"next\"]:contains(Next)").size()==0)
                     break;
