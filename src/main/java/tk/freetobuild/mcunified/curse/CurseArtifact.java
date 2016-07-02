@@ -49,6 +49,10 @@ public class CurseArtifact {
             return null;
         }
     }
+
+    public List<CurseArtifact> getRecommendedDependencyArtifacts() {
+        return getDependencies().stream().map(simpleCurseModInfo -> simpleCurseModInfo.getFiles().stream().filter(curseArtifact -> curseArtifact.getVersion().equals(getVersion())).collect(Collectors.toList()).get(0)).collect(Collectors.toList());
+    }
     @Override
     public String toString() {
         return modId+":"+fileID;

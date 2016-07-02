@@ -7,4 +7,7 @@ public class SimpleCurseArtifact extends CurseArtifact {
     public SimpleCurseArtifact(String modId, String fileID) {
         super(modId, "", "", fileID, null);
     }
+    public SimpleCurseArtifact(String shortHand) {
+        this(shortHand.split(":")[0],shortHand.split(":")[1]);
+    }
 }
