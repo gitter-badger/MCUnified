@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public class CurseArtifact {
     public List<SimpleCurseModInfo> getDependencies() {
         try {
             Document doc = Jsoup.connect(getPage()).userAgent("Mozilla").get();
-            return doc.select(".project-tag").stream().map(e -> CurseAPI.getSimpleMod("http://minecraft.curseforge.com"+e.select("a").get(0).attr("href"))).collect(Collectors.toList());
+            return doc.select("h5:contains(Required Library)+ul .project-tag").stream().map(e -> CurseAPI.getSimpleMod("http://minecraft.curseforge.com"+e.select("a").get(0).attr("href"))).collect(Collectors.toList());
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -75,4 +76,22 @@ public class CurseArtifact {
     }
 
     public String getVersion() { return version; }
+
+    public List<CurseArtifact> getAllDependencies() {
+        List<CurseArtifact> dependencies = new ArrayList<>();
+        getRecommendedDependencyArtifacts().forEach(dependency -> {
+            if(!dependencies.contains(dependency))
+                dependencies.add(dependency);
+            dependency.getAllDependencies().forEach(d -> {
+                if(!dependencies.contains(d))
+                    dependencies.add(d);
+            });
+        });
+        return dependencies;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof CurseArtifact && obj.toString().equals(toString());
+    }
 }
