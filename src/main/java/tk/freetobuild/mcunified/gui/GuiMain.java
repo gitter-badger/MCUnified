@@ -293,7 +293,7 @@ public class GuiMain {
                     out.getParentFile().mkdirs();
                 Main.logger.info("Copying " + in.getName());
                 ProgressMonitorWorker worker = new ProgressMonitorWorker(mon -> {
-                    mon.setMax((int) (in.length() / 4096L));
+                    mon.setMax((int) (in.length()));
                     byte[] buf = new byte[4096];
                     try {
                         InputStream is = new FileInputStream(in);
@@ -303,7 +303,7 @@ public class GuiMain {
                             if (r == -1)
                                 break;
                             os.write(buf, 0, r);
-                            mon.incrementProgress(r / 4096);
+                            mon.incrementProgress(r);
                         }
                     } catch (IOException e1) {
                         e1.printStackTrace();
@@ -346,7 +346,7 @@ public class GuiMain {
                     out.getParentFile().mkdirs();
                 Main.logger.info("Copying " + in.getName());
                 ProgressMonitorWorker worker = new ProgressMonitorWorker(mon -> {
-                    mon.setMax((int) (in.length() / 4096L));
+                    mon.setMax((int) (in.length()));
                     byte[] buf = new byte[4096];
                     try {
                         InputStream is = new FileInputStream(in);
@@ -356,7 +356,7 @@ public class GuiMain {
                             if (r == -1)
                                 break;
                             os.write(buf, 0, r);
-                            mon.incrementProgress(r / 4096);
+                            mon.incrementProgress(r);
                         }
                     } catch (IOException e1) {
                         e1.printStackTrace();
@@ -413,7 +413,7 @@ public class GuiMain {
         //endregion loaderModList
         //region instalLoaderMod
         installButton.addActionListener(e -> {
-            new DialogInstallMod().setVisible(true);
+            new DialogInstallMod((UnifiedMCInstance) instanceList.getSelectedValue()).setVisible(true);
         });
         //endregion installLoaderMod
     }

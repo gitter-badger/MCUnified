@@ -2,6 +2,7 @@ package tk.freetobuild.mcunified.gui.components;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import tk.freetobuild.mcunified.UnifiedMCInstance;
 import tk.freetobuild.mcunified.curse.CurseModInfo;
 import tk.freetobuild.mcunified.gui.dialogs.DialogInstallVersion;
 
@@ -24,7 +25,7 @@ public class ModPanel {
     public JButton button1;
     public JButton button2;
 
-    public ModPanel(CurseModInfo info, Dimension dimension) {
+    public ModPanel(CurseModInfo info, UnifiedMCInstance instance, Dimension dimension) {
         try {
             modIcon.setIcon(new ImageIcon(ImageIO.read(new URL(info.getIcon()))));
         } catch (IOException e) {
@@ -44,7 +45,7 @@ public class ModPanel {
         });
         panel1.setMaximumSize(dimension);
         button2.addActionListener(e -> {
-            new DialogInstallVersion(info).setVisible(true);
+            new DialogInstallVersion(instance, info).setVisible(true);
         });
     }
 

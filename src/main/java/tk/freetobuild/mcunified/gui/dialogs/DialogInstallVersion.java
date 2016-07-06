@@ -3,26 +3,32 @@ package tk.freetobuild.mcunified.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import tk.freetobuild.mcunified.UnifiedMCInstance;
+import tk.freetobuild.mcunified.curse.CurseArtifact;
 import tk.freetobuild.mcunified.curse.CurseModInfo;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DialogInstallVersion extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    public JTable artifactTable;
+    private JPanel artifactList;
 
-    public DialogInstallVersion(CurseModInfo modInfo) {
+    public DialogInstallVersion(UnifiedMCInstance instance, CurseModInfo modInfo) {
         $$$setupUI$$$();
-        System.out.println(artifactTable.getModel().getClass());
+        setTitle("Install " + modInfo.getName());
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -43,6 +49,35 @@ public class DialogInstallVersion extends JDialog {
 
 // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        try {
+            ImageIcon ico = new ImageIcon(ImageIO.read(getClass().getResourceAsStream("/images/curseinstaller/download.png")));
+            modInfo.getFiles().stream().filter(c -> c.getVersion().equals(instance.version)).forEach(artifact -> {
+                JPanel result = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                JLabel icon = new JLabel(ico);
+                icon.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        List<CurseArtifact> depedencies = new ArrayList<>();
+                        depedencies.add(artifact);
+                        depedencies.addAll(artifact.getAllDependencies());
+                        new DialogDownloadMod(instance, depedencies).setVisible(true);
+                        super.mouseClicked(e);
+                    }
+                });
+                icon.setHorizontalAlignment(SwingConstants.LEFT);
+                JLabel text = new JLabel(artifact.getName());
+                text.setHorizontalAlignment(SwingConstants.LEFT);
+                text.setHorizontalTextPosition(SwingConstants.LEFT);
+                result.add(icon);
+                result.add(text);
+                artifactList.add(result);
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        pack();
     }
 
     private void onOK() {
@@ -54,8 +89,7 @@ public class DialogInstallVersion extends JDialog {
     }
 
     private void createUIComponents() {
-        String[] cols = {"Name", "Version", "Install"};
-        artifactTable = new JTable(new Object[0][0], cols);
+        artifactList = new JPanel(new GridLayout(-1, 1));
     }
 
     /**
@@ -86,7 +120,9 @@ public class DialogInstallVersion extends JDialog {
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        panel3.add(artifactTable, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        panel3.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        scrollPane1.setViewportView(artifactList);
     }
 
     /**

@@ -3,6 +3,7 @@ package tk.freetobuild.mcunified.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import tk.freetobuild.mcunified.UnifiedMCInstance;
 import tk.freetobuild.mcunified.curse.CurseModList;
 import tk.freetobuild.mcunified.gui.cellrenderers.PanelRenderer;
 import tk.freetobuild.mcunified.gui.components.ModPanel;
@@ -21,7 +22,7 @@ public class DialogInstallMod extends JDialog {
     public JButton searchButton;
     public JPanel modPanel;
 
-    public DialogInstallMod() {
+    public DialogInstallMod(UnifiedMCInstance instance) {
         $$$setupUI$$$();
         setContentPane(contentPane);
         setModal(true);
@@ -47,7 +48,7 @@ public class DialogInstallMod extends JDialog {
         modPanel.setMaximumSize(new Dimension(640, 480));
         pack();
         try {
-            CurseModList.loadTopMods().next().forEach(e -> modPanel.add(new ModPanel(e, new Dimension(modPanel.getWidth(), -1)).panel1));
+            CurseModList.loadTopMods().next().forEach(e -> modPanel.add(new ModPanel(e, instance, new Dimension(modPanel.getWidth(), -1)).panel1));
         } catch (IOException e) {
 
         }
@@ -61,13 +62,6 @@ public class DialogInstallMod extends JDialog {
     private void onCancel() {
 // add your code here if necessary
         dispose();
-    }
-
-    public static void main(String[] args) {
-        DialogInstallMod dialog = new DialogInstallMod();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
     }
 
     private void createUIComponents() {

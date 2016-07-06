@@ -18,20 +18,20 @@ public class ProgressMonitorWorker extends SwingWorker<Void,Void> {
     @Override
     protected Void doInBackground() throws Exception {
         toDo.accept(new IProgressMonitor() {
-            private int max;
-            private int progress;
+            private long max;
+            private long progress;
             @Override
-            public void setProgress(int progress) {
-                ProgressMonitorWorker.this.setProgress((this.progress=progress)*100/max);
+            public void setProgress(long progress) {
+                ProgressMonitorWorker.this.setProgress((int)((this.progress=progress)*100/max));
             }
 
             @Override
-            public void setMax(int len) {
+            public void setMax(long len) {
                 max = len;
             }
 
             @Override
-            public void incrementProgress(int amount) {
+            public void incrementProgress(long amount) {
                 setProgress(this.progress+amount);
             }
 
