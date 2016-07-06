@@ -3,6 +3,7 @@ package tk.freetobuild.mcunified.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.sun.istack.internal.Nullable;
 import tk.freetobuild.mcunified.Main;
 import tk.freetobuild.mcunified.UnifiedMCInstance;
 import tk.freetobuild.mcunified.gui.GuiMain;
@@ -58,13 +59,7 @@ public class DialogNewInstance extends JDialog {
         try {
             List<String> versions = getVersionList();
             versions.forEach(comboBox1::addItem);
-            comboBox1.addActionListener(actionEvent -> {
-                if (comboBox1.getSelectedIndex() > 0 && textField1.getText().length() > 0) {
-                    buttonOK.setEnabled(true);
-                } else {
-                    buttonOK.setEnabled(false);
-                }
-            });
+            comboBox1.addActionListener(this::isContentsValid);
             textField1.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void insertUpdate(DocumentEvent documentEvent) {
@@ -82,11 +77,7 @@ public class DialogNewInstance extends JDialog {
                 }
 
                 private void update() {
-                    if (comboBox1.getSelectedIndex() > 0 && textField1.getText().length() > 0) {
-                        buttonOK.setEnabled(true);
-                    } else {
-                        buttonOK.setEnabled(false);
-                    }
+                    isContentsValid(null);
                 }
             });
         } catch (Exception e) {
@@ -94,6 +85,13 @@ public class DialogNewInstance extends JDialog {
         }
     }
 
+    private void isContentsValid(@Nullable ActionEvent e) {
+        if (comboBox1.getSelectedIndex() >= 0 && textField1.getText().length() > 0) {
+            buttonOK.setEnabled(true);
+        } else {
+            buttonOK.setEnabled(false);
+        }
+    }
     private void onOK() {
         UnifiedMCInstance instance = new UnifiedMCInstance(textField1.getText(), comboBox1.getSelectedItem().toString());
         ((DefaultListModel) parent.instanceList.getModel()).addElement(instance);
