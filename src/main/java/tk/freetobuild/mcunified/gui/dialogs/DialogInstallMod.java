@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import tk.freetobuild.mcunified.UnifiedMCInstance;
+import tk.freetobuild.mcunified.curse.CurseModInfo;
 import tk.freetobuild.mcunified.curse.CurseModList;
 import tk.freetobuild.mcunified.gui.cellrenderers.PanelRenderer;
 import tk.freetobuild.mcunified.gui.components.ModPanel;
@@ -13,6 +14,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class DialogInstallMod extends JDialog {
     private JPanel contentPane;
@@ -21,6 +25,7 @@ public class DialogInstallMod extends JDialog {
     public JTextField searchField;
     public JButton searchButton;
     public JPanel modPanel;
+    private JScrollPane scrollPane;
 
     public DialogInstallMod(UnifiedMCInstance instance) {
         $$$setupUI$$$();
@@ -45,15 +50,28 @@ public class DialogInstallMod extends JDialog {
 // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         setPreferredSize(new Dimension(640, 480));
-        modPanel.setMaximumSize(new Dimension(640, 480));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         pack();
-        try {
-            CurseModList.loadTopMods().next().forEach(e -> modPanel.add(new ModPanel(e, instance, new Dimension(modPanel.getWidth(), -1)).panel1));
-        } catch (IOException e) {
+        SwingWorker<List<CurseModInfo>, Void> worker = new SwingWorker<List<CurseModInfo>, Void>() {
+            @Override
+            protected List<CurseModInfo> doInBackground() throws Exception {
+                try {
+                    return CurseModList.loadTopMods().next();
+                } catch (IOException e) {
+                    return new ArrayList<>();
+                }
+            }
 
-        }
-
-
+            @Override
+            protected void done() {
+                try {
+                    get().forEach(e -> modPanel.add(new ModPanel(e, instance).panel1));
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        new DialogLoading("Getting mods...", worker).setVisible(true);
     }
 
     private void onOK() {
@@ -108,10 +126,10 @@ public class DialogInstallMod extends JDialog {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         panel3.add(panel4, gbc);
-        final JScrollPane scrollPane1 = new JScrollPane();
-        scrollPane1.setHorizontalScrollBarPolicy(30);
-        panel4.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        scrollPane1.setViewportView(modPanel);
+        scrollPane = new JScrollPane();
+        scrollPane.setHorizontalScrollBarPolicy(30);
+        panel4.add(scrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        scrollPane.setViewportView(modPanel);
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         gbc = new GridBagConstraints();

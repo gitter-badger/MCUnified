@@ -21,6 +21,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -31,7 +32,7 @@ public class DialogDownloadMod extends JDialog {
     private JProgressBar progressBar1;
     private JLabel statusLabel;
 
-    public DialogDownloadMod(UnifiedMCInstance instance, List<CurseArtifact> artifacts) {
+    public DialogDownloadMod(UnifiedMCInstance instance, CurseArtifact artifact) {
         setPreferredSize(new Dimension(320, 120));
         Logger logger = Logger.getLogger("Download");
         Handler handler = new Handler() {
@@ -49,50 +50,8 @@ public class DialogDownloadMod extends JDialog {
             }
         };
         logger.addHandler(handler);
-        long totalSize = artifacts.stream().mapToLong(a -> {
-            try {
-                return Utils.getFileSize(new URL(a.getDownload()));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return 0;
-            }
-        }).sum();
-        File outputDir = new File(instance.getLocation(), "mods");
-        if (!outputDir.exists())
-            outputDir.mkdirs();
-        ProgressMonitorWorker worker = new ProgressMonitorWorker(iProgressMonitor -> {
-            iProgressMonitor.setMax((int) (totalSize));
-            for (int i = 0; i < artifacts.size(); i++) {
-                CurseArtifact artifact = artifacts.get(i);
-                iProgressMonitor.setStatus("Downloading " + artifact.getModId() + "(" + (i + 1) + "/" + artifacts.size() + ")");
-                byte[] buf = new byte[4096];
-                try {
-                    InputStream is = new URL(artifact.getDownload()).openStream();
-                    FileOutputStream fos = new FileOutputStream(new File(outputDir, artifact.getName()));
-                    while (true) {
-                        int r = is.read(buf);
-                        if (r == -1)
-                            break;
-                        fos.write(buf, 0, r);
-                        System.out.println(r);
-                        iProgressMonitor.incrementProgress(r);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, () -> {
-            statusLabel.setText("Download Complete");
-            buttonCancel.setText("Close");
-            progressBar1.setVisible(false);
-            logger.removeHandler(handler);
-        });
-
-        worker.addPropertyChangeListener(new ProgressMonitorListener(logger, progressBar1));
         setContentPane(contentPane);
-        worker.execute();
         setModal(true);
-
         buttonCancel.addActionListener(e ->
                 onCancel());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -103,6 +62,25 @@ public class DialogDownloadMod extends JDialog {
         });
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         pack();
+        new SwingWorker<List<CurseArtifact>, Void>() {
+            @Override
+            protected List<CurseArtifact> doInBackground() throws Exception {
+                List<CurseArtifact> artifacts = new ArrayList<>();
+                artifacts.add(artifact);
+                artifacts.addAll(artifact.getAllDependencies());
+                return artifacts;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    progressBar1.setIndeterminate(false);
+                    doDownloads(logger, handler, instance, get());
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
     }
 
     private void onCancel() {
@@ -118,6 +96,49 @@ public class DialogDownloadMod extends JDialog {
         if (!outDir.exists())
             outDir.mkdirs();
         return urls;
+    }
+
+    public void doDownloads(Logger logger, Handler handler, UnifiedMCInstance instance, List<CurseArtifact> artifacts) {
+        long totalSize = artifacts.stream().mapToLong(a -> {
+            try {
+                return Utils.getFileSize(new URL(a.getDownload()));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return 0;
+            }
+        }).sum();
+        File outputDir = new File(instance.getLocation(), "mods");
+        if (!outputDir.exists())
+            outputDir.mkdirs();
+        ProgressMonitorWorker worker = new ProgressMonitorWorker(iProgressMonitor -> {
+            iProgressMonitor.setMax((int) (totalSize));
+            for (int i = 0; i < artifacts.size(); i++) {
+                CurseArtifact a = artifacts.get(i);
+                iProgressMonitor.setStatus("Downloading " + a.getModId() + "(" + (i + 1) + "/" + artifacts.size() + ")");
+                byte[] buf = new byte[4096];
+                try {
+                    InputStream is = new URL(a.getDownload()).openStream();
+                    FileOutputStream fos = new FileOutputStream(new File(outputDir, a.getName()));
+                    while (true) {
+                        int r = is.read(buf);
+                        if (r == -1)
+                            break;
+                        fos.write(buf, 0, r);
+                        iProgressMonitor.incrementProgress(r);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, () -> {
+            statusLabel.setText("Download Complete");
+            buttonCancel.setText("Close");
+            progressBar1.setVisible(false);
+            logger.removeHandler(handler);
+        });
+
+        worker.addPropertyChangeListener(new ProgressMonitorListener(logger, progressBar1));
+        worker.execute();
     }
 
     {
@@ -152,9 +173,10 @@ public class DialogDownloadMod extends JDialog {
         panel3.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         statusLabel = new JLabel();
-        statusLabel.setText("Downloading...");
+        statusLabel.setText("Getting Downloads");
         panel3.add(statusLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_SOUTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         progressBar1 = new JProgressBar();
+        progressBar1.setIndeterminate(true);
         panel3.add(progressBar1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 

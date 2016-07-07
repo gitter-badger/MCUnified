@@ -6,6 +6,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import tk.freetobuild.mcunified.UnifiedMCInstance;
 import tk.freetobuild.mcunified.curse.CurseArtifact;
 import tk.freetobuild.mcunified.curse.CurseModInfo;
+import tk.freetobuild.mcunified.gui.components.JLabelButton;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,6 +19,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class DialogInstallVersion extends JDialog {
@@ -46,36 +48,44 @@ public class DialogInstallVersion extends JDialog {
                 onCancel();
             }
         });
+        SwingWorker<List<CurseArtifact>, Void> worker = new SwingWorker<List<CurseArtifact>, Void>() {
+            @Override
+            protected List<CurseArtifact> doInBackground() throws Exception {
+                return modInfo.getFiles().stream().filter(c -> c.getVersion().equals(instance.version)).collect(Collectors.toList());
+            }
 
+            @Override
+            protected void done() {
+                try {
+                    ImageIcon ico = new ImageIcon(ImageIO.read(getClass().getResourceAsStream("/images/curseinstaller/download.png")));
+                    ImageIcon hover = new ImageIcon(ImageIO.read(getClass().getResourceAsStream("/images/curseinstaller/download:hover.png")));
+                    get().forEach(artifact -> {
+                        JPanel result = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                        JLabel icon = new JLabelButton(ico, hover);
+                        icon.addMouseListener(new MouseAdapter() {
+                            @Override
+                            public void mouseClicked(MouseEvent e) {
+                                new DialogDownloadMod(instance, artifact).setVisible(true);
+                                super.mouseClicked(e);
+                            }
+                        });
+                        icon.setHorizontalAlignment(SwingConstants.LEFT);
+                        JLabel text = new JLabel(artifact.getName());
+                        text.setHorizontalAlignment(SwingConstants.LEFT);
+                        text.setHorizontalTextPosition(SwingConstants.LEFT);
+                        result.add(icon);
+                        result.add(text);
+                        artifactList.add(result);
+                    });
+                } catch (IOException | InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        new DialogLoading("Loading Versions", worker).setVisible(true);
 // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        try {
-            ImageIcon ico = new ImageIcon(ImageIO.read(getClass().getResourceAsStream("/images/curseinstaller/download.png")));
-            modInfo.getFiles().stream().filter(c -> c.getVersion().equals(instance.version)).forEach(artifact -> {
-                JPanel result = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                JLabel icon = new JLabel(ico);
-                icon.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        List<CurseArtifact> depedencies = new ArrayList<>();
-                        depedencies.add(artifact);
-                        depedencies.addAll(artifact.getAllDependencies());
-                        new DialogDownloadMod(instance, depedencies).setVisible(true);
-                        super.mouseClicked(e);
-                    }
-                });
-                icon.setHorizontalAlignment(SwingConstants.LEFT);
-                JLabel text = new JLabel(artifact.getName());
-                text.setHorizontalAlignment(SwingConstants.LEFT);
-                text.setHorizontalTextPosition(SwingConstants.LEFT);
-                result.add(icon);
-                result.add(text);
-                artifactList.add(result);
-            });
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         pack();
     }
