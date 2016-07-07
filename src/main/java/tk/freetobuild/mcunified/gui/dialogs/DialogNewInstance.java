@@ -3,7 +3,6 @@ package tk.freetobuild.mcunified.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.sun.istack.internal.Nullable;
 import tk.freetobuild.mcunified.Main;
 import tk.freetobuild.mcunified.UnifiedMCInstance;
 import tk.freetobuild.mcunified.gui.GuiMain;
@@ -85,7 +84,7 @@ public class DialogNewInstance extends JDialog {
         }
     }
 
-    private void isContentsValid(@Nullable ActionEvent e) {
+    private void isContentsValid(ActionEvent e) {
         if (comboBox1.getSelectedIndex() >= 0 && textField1.getText().length() > 0) {
             buttonOK.setEnabled(true);
         } else {
