@@ -6,7 +6,6 @@ import com.intellij.uiDesigner.core.Spacer;
 import tk.freetobuild.mcunified.UnifiedMCInstance;
 import tk.freetobuild.mcunified.curse.CurseModInfo;
 import tk.freetobuild.mcunified.curse.CurseModList;
-import tk.freetobuild.mcunified.gui.cellrenderers.PanelRenderer;
 import tk.freetobuild.mcunified.gui.components.ModPanel;
 import tk.freetobuild.mcunified.gui.components.PlaceholderTextField;
 
@@ -23,7 +22,7 @@ public class DialogInstallMod extends JDialog {
     private JButton buttonOK;
     private JButton buttonCancel;
     public JTextField searchField;
-    public JButton searchButton;
+    public JButton buttonSearch;
     public JPanel modPanel;
     private JScrollPane scrollPane;
 
@@ -31,7 +30,7 @@ public class DialogInstallMod extends JDialog {
         $$$setupUI$$$();
         setContentPane(contentPane);
         setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
+        getRootPane().setDefaultButton(buttonSearch);
 
         buttonOK.addActionListener(e ->
                 onOK());
@@ -66,6 +65,34 @@ public class DialogInstallMod extends JDialog {
             protected void done() {
                 try {
                     get().forEach(e -> modPanel.add(new ModPanel(e, instance).panel1));
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        new DialogLoading("Getting mods...", worker).setVisible(true);
+        buttonSearch.addActionListener(e -> onSearch(instance));
+    }
+
+    private void onSearch(UnifiedMCInstance instance) {
+        modPanel.removeAll();
+        modPanel.updateUI();
+        SwingWorker<List<CurseModInfo>, Void> worker = new SwingWorker<List<CurseModInfo>, Void>() {
+            @Override
+            protected List<CurseModInfo> doInBackground() throws Exception {
+                List<CurseModInfo> mods = new ArrayList<>();
+                CurseModList list = CurseModList.search(searchField.getText());
+                if (list != null)
+                    while (list.hasNext())
+                        mods.addAll(list.next());
+                return mods;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get().forEach(e -> modPanel.add(new ModPanel(e, instance).panel1));
+                    modPanel.updateUI();
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
@@ -139,9 +166,9 @@ public class DialogInstallMod extends JDialog {
         gbc.fill = GridBagConstraints.BOTH;
         panel3.add(panel5, gbc);
         panel5.add(searchField, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        searchButton = new JButton();
-        searchButton.setText("Search");
-        panel5.add(searchButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonSearch = new JButton();
+        buttonSearch.setText("Search");
+        panel5.add(buttonSearch, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
