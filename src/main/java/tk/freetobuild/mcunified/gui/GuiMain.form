@@ -340,39 +340,41 @@
         </children>
       </grid>
       <toolbar id="fe35f">
-        <constraints border-constraint="North"/>
-        <properties/>
+        <constraints border-constraint="West"/>
+        <properties>
+          <orientation value="1"/>
+        </properties>
         <border type="none"/>
         <children>
-          <component id="4b1ea" class="javax.swing.JLabel" binding="newLabel">
+          <component id="4b1ea" class="javax.swing.JLabel" binding="newLabel" custom-create="true">
             <constraints/>
             <properties>
               <text value=""/>
               <toolTipText value="New Instance"/>
             </properties>
           </component>
-          <component id="4ef75" class="javax.swing.JLabel" binding="importLabel">
+          <component id="4ef75" class="javax.swing.JLabel" binding="importLabel" custom-create="true">
             <constraints/>
             <properties>
               <text value=""/>
               <toolTipText value="Import"/>
             </properties>
           </component>
-          <component id="8d2e1" class="javax.swing.JLabel" binding="exportLabel">
+          <component id="8d2e1" class="javax.swing.JLabel" binding="exportLabel" custom-create="true">
             <constraints/>
             <properties>
               <text value=""/>
               <toolTipText value="Export Instance"/>
             </properties>
           </component>
-          <component id="a032" class="javax.swing.JLabel" binding="removeLabel">
+          <component id="a032" class="javax.swing.JLabel" binding="removeLabel" custom-create="true">
             <constraints/>
             <properties>
               <text value=""/>
               <toolTipText value="Remove Instance"/>
             </properties>
           </component>
-          <component id="55e4d" class="javax.swing.JLabel" binding="aboutLabel">
+          <component id="55e4d" class="javax.swing.JLabel" binding="aboutLabel" custom-create="true">
             <constraints/>
             <properties>
               <horizontalAlignment value="4"/>
@@ -380,7 +382,7 @@
               <toolTipText value="About"/>
             </properties>
           </component>
-          <component id="c47b4" class="javax.swing.JLabel" binding="accountsLabel">
+          <component id="c47b4" class="javax.swing.JLabel" binding="accountsLabel" custom-create="true">
             <constraints/>
             <properties>
               <text value=""/>

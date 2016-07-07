@@ -8,6 +8,7 @@ import tk.freetobuild.mcunified.UnifiedMCInstance;
 import tk.freetobuild.mcunified.curse.ForgeMod;
 import tk.freetobuild.mcunified.gui.cellrenderers.AccountCellRenderer;
 import tk.freetobuild.mcunified.gui.cellrenderers.LabelListRenderer;
+import tk.freetobuild.mcunified.gui.components.JLabelButton;
 import tk.freetobuild.mcunified.gui.components.ServerInfoPanel;
 import tk.freetobuild.mcunified.gui.dialogs.*;
 import tk.freetobuild.mcunified.gui.workers.ForgeInstallerWorker;
@@ -173,39 +174,6 @@ public class GuiMain {
             }
         });
         //endregion launchButton
-        //region newInstance
-        setupLabelButton(newLabel, "/images/toolbar/plus.png", () -> new DialogNewInstance(GuiMain.this).setVisible(true));
-        //endregion newInstance
-        //region import
-        setupLabelButton(importLabel, "/images/toolbar/import.png", () -> {
-        });
-        //endregion newInstance
-        //region export
-        setupLabelButton(exportLabel, "/images/toolbar/export.png", () -> {
-        });
-        //endregion export
-        //region removeLabel
-        setupLabelButton(removeLabel, "/images/toolbar/remove.png", () -> {
-            if (!instanceList.isSelectionEmpty()) {
-                UnifiedMCInstance mcinstance = (UnifiedMCInstance) instanceList.getSelectedValue();
-                Utils.recursiveDelete(mcinstance.getLocation());
-                ((DefaultListModel) instanceList.getModel()).removeElement(mcinstance);
-            }
-        });
-        //endregion removeLabel
-        //region accounts
-        setupLabelButton(accountsLabel, "/images/toolbar/accounts.png", () -> {
-            new DialogAccountManager().setVisible(true);
-            comboBox1.removeAllItems();
-            comboBox1.addItem("Select an account");
-            loadProfiles();
-        });
-        //endregion accounts
-        //region aboutLabel
-        setupLabelButton(aboutLabel, "/images/toolbar/about.png", () -> {
-            new AboutDialog().setVisible(true);
-        });
-        //endregion aboutLabel
         //region installForge
         installForgeButton.addActionListener(e -> {
             if (!instanceList.isSelectionEmpty()) {
@@ -376,7 +344,6 @@ public class GuiMain {
         removeLoaderModButton.addActionListener(e -> {
             if (!loaderModList.isSelectionEmpty()) {
                 ForgeMod mod = (ForgeMod) loaderModList.getSelectedValue();
-                UnifiedMCInstance instance = ((UnifiedMCInstance) instanceList.getSelectedValue());
                 File f = mod.getFile();
                 f.delete();
                 ((DefaultListModel) loaderModList.getModel()).removeElementAt(loaderModList.getSelectedIndex());
@@ -431,37 +398,15 @@ public class GuiMain {
         }
     }
 
-    private void setupLabelButton(JLabel label, String icon, Runnable onclick) {
-
-        Border raisedBorder = new JButton().getBorder();
-        EmptyBorder emptyBorder = new EmptyBorder(raisedBorder.getBorderInsets(label));
+    private JLabelButton setupLabelButton(String icon, Runnable onclick) {
         try {
-            label.setIcon(new ImageIcon(ImageIO.read(getClass().getResourceAsStream(icon))));
+            JLabelButton button = new JLabelButton(new ImageIcon(ImageIO.read(getClass().getResourceAsStream(icon + ".png"))), new ImageIcon(ImageIO.read(getClass().getResourceAsStream(icon + ":hover.png"))));
+            button.addActionListener(e -> onclick.run());
+            return button;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        label.setBorder(emptyBorder);
-        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        label.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                super.mouseEntered(e);
-                label.setBorder(raisedBorder);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                super.mouseExited(e);
-                label.setBorder(emptyBorder);
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                onclick.run();
-            }
-        });
-
     }
 
     private void populateInstancePanel(UnifiedMCInstance instance) {
@@ -541,7 +486,37 @@ public class GuiMain {
 
     private void createUIComponents() {
         instanceServerList = new JPanel(new GridLayout(-1, 1));
-        //instanceServerList.setCellRenderer(new ServerCellRender());
+        //region newInstance
+        newLabel = setupLabelButton("/images/toolbar/new", () -> new DialogNewInstance(GuiMain.this).setVisible(true));
+        //endregion newInstance
+        //region import
+        importLabel = setupLabelButton("/images/toolbar/import", () -> {
+        });
+        //endregion newInstance
+        //region export
+        exportLabel = setupLabelButton("/images/toolbar/export", () -> {
+        });
+        //endregion export
+        //region removeLabel
+        removeLabel = setupLabelButton("/images/toolbar/remove", () -> {
+            if (!instanceList.isSelectionEmpty()) {
+                UnifiedMCInstance mcinstance = (UnifiedMCInstance) instanceList.getSelectedValue();
+                Utils.recursiveDelete(mcinstance.getLocation());
+                ((DefaultListModel) instanceList.getModel()).removeElement(mcinstance);
+            }
+        });
+        //endregion removeLabel
+        //region accounts
+        accountsLabel = setupLabelButton("/images/toolbar/accounts", () -> {
+            new DialogAccountManager().setVisible(true);
+            comboBox1.removeAllItems();
+            comboBox1.addItem("Select an account");
+            loadProfiles();
+        });
+        //endregion accounts
+        //region aboutLabel
+        aboutLabel = setupLabelButton("/images/toolbar/about", () -> new AboutDialog().setVisible(true));
+        //endregion aboutLabel
     }
 
     /**
@@ -740,29 +715,24 @@ public class GuiMain {
         gbc.anchor = GridBagConstraints.WEST;
         panel11.add(statusLabel, gbc);
         final JToolBar toolBar1 = new JToolBar();
-        panelMain.add(toolBar1, BorderLayout.NORTH);
-        newLabel = new JLabel();
+        toolBar1.setOrientation(1);
+        panelMain.add(toolBar1, BorderLayout.WEST);
         newLabel.setText("");
         newLabel.setToolTipText("New Instance");
         toolBar1.add(newLabel);
-        importLabel = new JLabel();
         importLabel.setText("");
         importLabel.setToolTipText("Import");
         toolBar1.add(importLabel);
-        exportLabel = new JLabel();
         exportLabel.setText("");
         exportLabel.setToolTipText("Export Instance");
         toolBar1.add(exportLabel);
-        removeLabel = new JLabel();
         removeLabel.setText("");
         removeLabel.setToolTipText("Remove Instance");
         toolBar1.add(removeLabel);
-        aboutLabel = new JLabel();
         aboutLabel.setHorizontalAlignment(4);
         aboutLabel.setText("");
         aboutLabel.setToolTipText("About");
         toolBar1.add(aboutLabel);
-        accountsLabel = new JLabel();
         accountsLabel.setText("");
         accountsLabel.setToolTipText("Accounts");
         toolBar1.add(accountsLabel);
