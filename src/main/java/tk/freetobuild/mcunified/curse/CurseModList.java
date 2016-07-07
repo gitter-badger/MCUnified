@@ -20,7 +20,7 @@ public class CurseModList implements Iterator<List<CurseModInfo>> {
     //region topModConsumer
     private static final Function<Element,CurseModInfo> topModConsumer = e -> {
         String id = e.select(".details .info.name a").get(0).attr("href");
-        id = id.substring(id.lastIndexOf("/"));
+        id = id.substring(id.lastIndexOf("/")+1);
         String icon = "http://static-elerium.cursecdn.com/1-0-6019-17319/Skins/Elerium/images/icons/avatar-flame.png";
         Elements icons = e.select(".avatar a img");
         if(icons.size()>0)
@@ -31,7 +31,7 @@ public class CurseModList implements Iterator<List<CurseModInfo>> {
     //region resultModConsumer
     private static final Function<Element,CurseModInfo> resultModConsumer = e -> {
         String id = e.select("td .results-name a").get(0).attr("href");
-        id = id.substring(id.lastIndexOf("/"),id.lastIndexOf("?"));
+        id = id.substring(id.lastIndexOf("/")+1,id.lastIndexOf("?"));
         String icon = "http://static-elerium.cursecdn.com/1-0-6019-17319/Skins/Elerium/images/icons/avatar-flame.png";
         Elements icons = e.select("td .results-image.e-avatar64 img");
         if(icons.size()>0)
