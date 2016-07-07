@@ -6,9 +6,11 @@ import tk.freetobuild.mcunified.gui.components.PlaceholderPasswordField;
 import tk.freetobuild.mcunified.gui.components.PlaceholderTextField;
 import sk.tomsik68.mclauncher.backend.GlobalAuthenticationSystem;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class DialogNewAccount extends JDialog {
     private JPanel contentPane;
@@ -18,6 +20,12 @@ public class DialogNewAccount extends JDialog {
     public JPasswordField passwordField1;
 
     public DialogNewAccount() {
+        try {
+            setTitle("New Account");
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         $$$setupUI$$$();
         setContentPane(contentPane);
         setModal(true);

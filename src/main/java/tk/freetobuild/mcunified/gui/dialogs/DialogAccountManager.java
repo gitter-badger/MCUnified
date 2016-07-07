@@ -9,12 +9,14 @@ import sk.tomsik68.mclauncher.impl.common.Platform;
 import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDAuthProfile;
 import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDProfileIO;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 
 public class DialogAccountManager extends JDialog {
     private JPanel contentPane;
@@ -25,6 +27,12 @@ public class DialogAccountManager extends JDialog {
     YDProfileIO profiles;
 
     public DialogAccountManager() {
+        try {
+            setTitle("Accounts");
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         setContentPane(contentPane);
         setModal(true);
         setPreferredSize(new Dimension(640, 480));

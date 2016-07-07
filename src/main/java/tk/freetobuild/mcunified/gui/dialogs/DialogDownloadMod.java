@@ -3,6 +3,7 @@ package tk.freetobuild.mcunified.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import tk.freetobuild.mcunified.Main;
 import tk.freetobuild.mcunified.UnifiedMCInstance;
 import tk.freetobuild.mcunified.Utils;
 import tk.freetobuild.mcunified.curse.CurseArtifact;
@@ -135,6 +136,7 @@ public class DialogDownloadMod extends JDialog {
             buttonCancel.setText("Close");
             progressBar1.setVisible(false);
             logger.removeHandler(handler);
+            Main.gui.loadLoaderMods((DefaultListModel) Main.gui.loaderModList.getModel(), instance);
         });
 
         worker.addPropertyChangeListener(new ProgressMonitorListener(logger, progressBar1));

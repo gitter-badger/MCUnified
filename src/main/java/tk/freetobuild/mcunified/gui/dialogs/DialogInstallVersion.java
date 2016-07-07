@@ -30,6 +30,11 @@ public class DialogInstallVersion extends JDialog {
 
     public DialogInstallVersion(UnifiedMCInstance instance, CurseModInfo modInfo) {
         $$$setupUI$$$();
+        try {
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         setTitle("Install " + modInfo.getName());
         setContentPane(contentPane);
         setModal(true);

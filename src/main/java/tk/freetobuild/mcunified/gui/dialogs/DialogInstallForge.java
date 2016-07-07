@@ -7,9 +7,11 @@ import tk.freetobuild.mcunified.UnifiedMCInstance;
 import net.minecraftforge.installer.ForgeArtifact;
 import net.minecraftforge.installer.ForgeVersionList;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -21,6 +23,12 @@ public class DialogInstallForge extends JDialog {
     private ForgeArtifact artifact = null;
 
     public DialogInstallForge(UnifiedMCInstance instance) {
+        try {
+            setTitle("Installing Forge");
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);

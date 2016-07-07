@@ -452,6 +452,7 @@ public class GuiMain {
     }
 
     public void loadLoaderMods(DefaultListModel model, UnifiedMCInstance instance) {
+        model.clear();
         File jarMods = new File(instance.getLocation(), "mods");
         if (!jarMods.exists())
             jarMods.mkdirs();

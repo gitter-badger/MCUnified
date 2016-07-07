@@ -11,6 +11,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -31,6 +32,12 @@ public class DialogNewInstance extends JDialog {
     GuiMain parent;
 
     public DialogNewInstance(GuiMain parent) {
+        try {
+            setTitle("New Instance");
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.parent = parent;
         $$$setupUI$$$();
         setTitle("New Instance");

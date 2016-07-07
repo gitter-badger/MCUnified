@@ -9,6 +9,7 @@ import tk.freetobuild.mcunified.curse.CurseModList;
 import tk.freetobuild.mcunified.gui.components.ModPanel;
 import tk.freetobuild.mcunified.gui.components.PlaceholderTextField;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -28,6 +29,12 @@ public class DialogInstallMod extends JDialog {
 
     public DialogInstallMod(UnifiedMCInstance instance) {
         $$$setupUI$$$();
+        try {
+            setTitle("Install Mod");
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonSearch);

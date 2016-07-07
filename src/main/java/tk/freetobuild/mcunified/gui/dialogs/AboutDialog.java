@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -15,6 +16,12 @@ public class AboutDialog extends JDialog {
     public JEditorPane textArea1;
 
     public AboutDialog() {
+        try {
+            setTitle("About");
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         setPreferredSize(new Dimension(320, 240));
         try {
             textArea1.setPage(getClass().getResource("/about.html"));

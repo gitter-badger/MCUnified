@@ -11,9 +11,11 @@ import sk.tomsik68.mclauncher.api.login.IProfile;
 import sk.tomsik68.mclauncher.impl.common.Platform;
 import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDProfileIO;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class DialogSelectPlayer extends JDialog {
     private JPanel contentPane;
@@ -24,6 +26,12 @@ public class DialogSelectPlayer extends JDialog {
     public String server = "";
 
     public DialogSelectPlayer() {
+        try {
+            setTitle("Select Player");
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         setIconImage(HeadResolver.def);
         setContentPane(contentPane);
         setModal(true);
