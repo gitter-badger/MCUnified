@@ -3,6 +3,7 @@ package tk.freetobuild.mcunified;
 import com.bulenkov.darcula.DarculaLaf;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import tk.freetobuild.mcunified.gui.GuiMain;
 import tk.freetobuild.mcunified.gui.dialogs.DialogSelectPlayer;
 import tk.freetobuild.mcunified.gui.HeadResolver;
 import tk.freetobuild.mcunified.gui.MainFrame;
@@ -25,6 +26,7 @@ public class Main {
     public static Logger logger;
     public static MinecraftLauncherBackend backend;
     public static YDLoginService service;
+    public static GuiMain gui;
     public static void main(String[] args) {
         logger = Logger.getLogger("MCUnified");
         logger.info("Initializing Launcher");

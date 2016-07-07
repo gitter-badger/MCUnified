@@ -15,7 +15,6 @@ import java.io.*;
  * Created by liz on 6/22/16.
  */
 public class MainFrame extends JFrame {
-    private GuiMain gui;
     public MainFrame() {
         super("MCUnified");
         try {
@@ -23,7 +22,7 @@ public class MainFrame extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        setContentPane((gui = new GuiMain(this)).getPanelMain());
+        setContentPane((Main.gui = new GuiMain(this)).getPanelMain());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         //buildMenuBar();
         setPreferredSize(new Dimension(640,480));
@@ -37,7 +36,7 @@ public class MainFrame extends JFrame {
         //region new Instance
         JMenu importInstance = new JMenu("Import");
         JMenuItem newInstance = new JMenuItem("New");
-        newInstance.addActionListener(actionEvent -> new DialogNewInstance(gui).setVisible(true));
+        newInstance.addActionListener(actionEvent -> new DialogNewInstance(Main.gui).setVisible(true));
         JMenuItem technicInstance = new JMenuItem("Technic Pack");
         JMenuItem ftbInstance = new JMenuItem("Feed The Beast Pack");
         JMenuItem atInstance = new JMenuItem("ATLauncher Pack");
@@ -49,10 +48,10 @@ public class MainFrame extends JFrame {
 
         JMenuItem deleteInstance = new JMenuItem("Delete");
         deleteInstance.addActionListener(e -> {
-            if(!gui.instanceList.isSelectionEmpty()) {
-                UnifiedMCInstance mcinstance = (UnifiedMCInstance) gui.instanceList.getSelectedValue();
+            if(!Main.gui.instanceList.isSelectionEmpty()) {
+                UnifiedMCInstance mcinstance = (UnifiedMCInstance) Main.gui.instanceList.getSelectedValue();
                 Utils.recursiveDelete(mcinstance.getLocation());
-                ((DefaultListModel)gui.instanceList.getModel()).removeElement(mcinstance);
+                ((DefaultListModel)Main.gui.instanceList.getModel()).removeElement(mcinstance);
             }
         });
         //endregion Instance
