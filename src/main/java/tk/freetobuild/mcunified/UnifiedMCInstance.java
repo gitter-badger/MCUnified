@@ -25,6 +25,7 @@ public class UnifiedMCInstance extends MinecraftInstance {
     private MCDownloadVersion mcversion;
     private String name;
     private JSONArray patches = new JSONArray();
+    public JSONArray mods = new JSONArray();
     private UnifiedMCInstance(File f, String version) {
         super(f);
         name = f.getName();
@@ -38,7 +39,7 @@ public class UnifiedMCInstance extends MinecraftInstance {
     public UnifiedMCInstance(File f, JSONObject obj) {
         this(f,obj.get("version").toString());
         loadPatches((JSONArray) obj.get("patches"));
-
+        this.mods = (JSONArray) obj.getOrDefault("mods",new JSONArray());
     }
     private void loadPatches(JSONArray patches) {
         patches.forEach(obj -> {
@@ -67,6 +68,7 @@ public class UnifiedMCInstance extends MinecraftInstance {
         JSONObject output = new JSONObject();
         output.put("version",version);
         output.put("patches",patches);
+        output.put("mods",mods);
         return output;
     }
     public void save() throws IOException {

@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class DialogDownloadMod extends JDialog {
     private JPanel contentPane;
@@ -111,6 +112,7 @@ public class DialogDownloadMod extends JDialog {
         File outputDir = new File(instance.getLocation(), "mods");
         if (!outputDir.exists())
             outputDir.mkdirs();
+        instance.mods.addAll(artifacts.stream().map(CurseArtifact::toString).filter(o -> !instance.mods.contains(o)).collect(Collectors.toList()));
         ProgressMonitorWorker worker = new ProgressMonitorWorker(iProgressMonitor -> {
             iProgressMonitor.setMax((int) (totalSize));
             for (int i = 0; i < artifacts.size(); i++) {

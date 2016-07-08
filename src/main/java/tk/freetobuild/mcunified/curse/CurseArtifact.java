@@ -29,6 +29,12 @@ public class CurseArtifact {
         this.name = name;
         this.fileID = fileID;
     }
+    public CurseArtifact(String shortHand) {
+        String[] split = shortHand.split(":");
+        this.modId = split[0];
+        this.fileID = split[1];
+        this.name = split[2];
+    }
     public String getDownload() {
         return getPage()+"/download";
     }
@@ -52,11 +58,11 @@ public class CurseArtifact {
     }
 
     public List<CurseArtifact> getRecommendedDependencyArtifacts() {
-        return getDependencies().stream().map(simpleCurseModInfo -> simpleCurseModInfo.getFiles().stream().filter(curseArtifact -> curseArtifact.getVersion().equals(getVersion())).collect(Collectors.toList()).get(0)).collect(Collectors.toList());
+        return getDependencies().stream().map(simpleCurseModInfo -> simpleCurseModInfo.getFiles().stream().filter(curseArtifact -> isCompatible(curseArtifact.getVersion())).collect(Collectors.toList()).get(0)).collect(Collectors.toList());
     }
     @Override
     public String toString() {
-        return modId+":"+fileID;
+        return modId+":"+fileID+":"+name;
     }
 
     public String getModId() {
@@ -89,7 +95,12 @@ public class CurseArtifact {
         });
         return dependencies;
     }
-
+    public boolean isCompatible(String version) {
+        String[] strings = version.split("\\.");
+        String v1 = strings[0]+"."+strings[1];
+        strings = getVersion().split("\\.");
+        return v1.equals(strings[0]+"."+strings[1]);
+    }
     @Override
     public boolean equals(Object obj) {
         return obj instanceof CurseArtifact && obj.toString().equals(toString());

@@ -12,12 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -56,7 +51,7 @@ public class DialogInstallVersion extends JDialog {
         SwingWorker<List<CurseArtifact>, Void> worker = new SwingWorker<List<CurseArtifact>, Void>() {
             @Override
             protected List<CurseArtifact> doInBackground() throws Exception {
-                return modInfo.getFiles().stream().filter(c -> c.getVersion().equals(instance.version)).collect(Collectors.toList());
+                return modInfo.getFiles().stream().filter(c -> c.isCompatible(instance.version)).collect(Collectors.toList());
             }
 
             @Override

@@ -2,12 +2,16 @@ package tk.freetobuild.mcunified.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.sun.corba.se.spi.activation.Server;
+import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDAuthProfile;
 import tk.freetobuild.mcunified.Utils;
 import tk.freetobuild.mcunified.Main;
 import tk.freetobuild.mcunified.UnifiedMCInstance;
+import tk.freetobuild.mcunified.WorldInstance;
 import tk.freetobuild.mcunified.curse.ForgeMod;
 import tk.freetobuild.mcunified.gui.cellrenderers.AccountCellRenderer;
 import tk.freetobuild.mcunified.gui.cellrenderers.LabelListRenderer;
+import tk.freetobuild.mcunified.gui.cellrenderers.WorldListRenderer;
 import tk.freetobuild.mcunified.gui.components.JLabelButton;
 import tk.freetobuild.mcunified.gui.components.ServerInfoPanel;
 import tk.freetobuild.mcunified.gui.dialogs.*;
@@ -72,6 +76,7 @@ public class GuiMain {
     public JProgressBar statusProgresBar;
     public JLabel statusLabel;
     public JLabel accountsLabel;
+    private JList worldList;
     MainFrame parent;
 
     public GuiMain(MainFrame parent) {
@@ -382,6 +387,7 @@ public class GuiMain {
         installButton.addActionListener(e -> {
             new DialogInstallMod((UnifiedMCInstance) instanceList.getSelectedValue()).setVisible(true);
         });
+        worldList.setCellRenderer(new WorldListRenderer());
         //endregion installLoaderMod
     }
 
@@ -418,7 +424,20 @@ public class GuiMain {
         if (new File(instance.getLocation(), "servers.dat").exists()) {
             try {
                 for (ServerInfo server : storage.loadServers()) {
-                    instanceServerList.add(new ServerInfoPanel(server).panel1);
+                    ServerInfoPanel panel = new ServerInfoPanel(server);
+                    panel.panel1.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            if (e.getClickCount() >= 2 && comboBox1.getSelectedIndex() > 0) {
+                                try {
+                                    instance.launch(((YDAuthProfile) comboBox1.getSelectedItem()).getName(), server.getIP() + ":" + server.getPort());
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                    instanceServerList.add(panel.panel1);
                 }
 
             } catch (Exception e) {
@@ -436,6 +455,7 @@ public class GuiMain {
         });
         loadJarMods(model, instance);
         loadLoaderMods(new DefaultListModel(), instance);
+        loadWorlds(instance);
     }
 
     public void loadJarMods(DefaultListModel model, UnifiedMCInstance instance) {
@@ -483,6 +503,15 @@ public class GuiMain {
                 }
             }
         }
+    }
+
+    public void loadWorlds(UnifiedMCInstance instance) {
+        DefaultListModel model = new DefaultListModel();
+        File saves = new File(instance.getLocation(), "saves");
+        for (File f : saves.listFiles()) {
+            model.addElement(new WorldInstance(f));
+        }
+        worldList.setModel(model);
     }
 
     private void createUIComponents() {
@@ -673,6 +702,8 @@ public class GuiMain {
         final JPanel panel8 = new JPanel();
         panel8.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Worlds", panel8);
+        worldList = new JList();
+        panel8.add(worldList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final JPanel panel9 = new JPanel();
         panel9.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Options", panel9);
