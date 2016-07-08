@@ -26,6 +26,8 @@ public class UnifiedMCInstance extends MinecraftInstance {
     private String name;
     private JSONArray patches = new JSONArray();
     public JSONArray mods = new JSONArray();
+    private int minMemory = 512;
+    private int maxMemory = 1024;
     private UnifiedMCInstance(File f, String version) {
         super(f);
         name = f.getName();
@@ -40,6 +42,9 @@ public class UnifiedMCInstance extends MinecraftInstance {
         this(f,obj.get("version").toString());
         loadPatches((JSONArray) obj.get("patches"));
         this.mods = (JSONArray) obj.getOrDefault("mods",new JSONArray());
+        JSONObject options = (JSONObject) obj.getOrDefault("options",new JSONObject());
+        minMemory = (int)options.getOrDefault("minMemory",minMemory);
+        maxMemory = (int)options.getOrDefault("maxMemory",maxMemory);
     }
     private void loadPatches(JSONArray patches) {
         patches.forEach(obj -> {
@@ -69,6 +74,10 @@ public class UnifiedMCInstance extends MinecraftInstance {
         output.put("version",version);
         output.put("patches",patches);
         output.put("mods",mods);
+        JSONObject options = new JSONObject();
+        options.put("minMemory",minMemory);
+        options.put("maxMemory",maxMemory);
+        output.put("options",options);
         return output;
     }
     public void save() throws IOException {
@@ -108,7 +117,17 @@ public class UnifiedMCInstance extends MinecraftInstance {
                 Main.logger.info("Update complete.");
                 UnifiedModdingProfile moddingProfile = new UnifiedModdingProfile();
                 Arrays.asList(new File(getLocation(),"jarMods").listFiles()).forEach(moddingProfile::injectAfterLib);
-                ProcessBuilder builder = Main.backend.launchMinecraft(GlobalAuthenticationSystem.login(profile), server, mcversion, new DefaultLaunchSettings(), moddingProfile);
+                ProcessBuilder builder = Main.backend.launchMinecraft(GlobalAuthenticationSystem.login(profile), server, mcversion, new DefaultLaunchSettings() {
+                    @Override
+                    public String getHeap() {
+                        return maxMemory+"M";
+                    }
+
+                    @Override
+                    public String getInitHeap() {
+                        return minMemory+"M";
+                    }
+                }, moddingProfile);
                 builder.command().set(builder.command().indexOf("--gameDir")+1,getLocation().getAbsolutePath());
                 builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
                 builder.directory(getLocation());
@@ -147,4 +166,19 @@ public class UnifiedMCInstance extends MinecraftInstance {
         return result;
     }
 
+    public int getMinMemory() {
+        return minMemory;
+    }
+
+    public void setMinMemory(int minMemory) {
+        this.minMemory = minMemory;
+    }
+
+    public int getMaxMemory() {
+        return maxMemory;
+    }
+
+    public void setMaxMemory(int maxMemory) {
+        this.maxMemory = maxMemory;
+    }
 }

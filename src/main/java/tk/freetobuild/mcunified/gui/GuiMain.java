@@ -2,6 +2,7 @@ package tk.freetobuild.mcunified.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import com.sun.corba.se.spi.activation.Server;
 import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDAuthProfile;
 import tk.freetobuild.mcunified.Utils;
@@ -32,6 +33,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -39,8 +42,11 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
+import java.util.Enumeration;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Created by liz on 6/22/16.
@@ -77,6 +83,11 @@ public class GuiMain {
     public JLabel statusLabel;
     public JLabel accountsLabel;
     private JList worldList;
+    private JSpinner memMinSpinner;
+    private JSpinner memMaxSpinner;
+    private JButton saveButton;
+    private JLabel importWorldButton;
+    private JLabel exportWorldButton;
     MainFrame parent;
 
     public GuiMain(MainFrame parent) {
@@ -172,8 +183,6 @@ public class GuiMain {
             try {
                 UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
                 instance.launch(((IProfile) comboBox1.getSelectedItem()).getName());
-            } catch (YDServiceAuthenticationException e1) {
-                e1.printStackTrace();
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
@@ -384,11 +393,21 @@ public class GuiMain {
         });
         //endregion loaderModList
         //region instalLoaderMod
-        installButton.addActionListener(e -> {
-            new DialogInstallMod((UnifiedMCInstance) instanceList.getSelectedValue()).setVisible(true);
-        });
+        installButton.addActionListener(e -> new DialogInstallMod((UnifiedMCInstance) instanceList.getSelectedValue()).setVisible(true));
         worldList.setCellRenderer(new WorldListRenderer());
         //endregion installLoaderMod
+
+        saveButton.addActionListener(e -> {
+            UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
+            instance.setMinMemory(MemoryModel.parseToMB(memMinSpinner.getValue().toString()));
+            instance.setMaxMemory(MemoryModel.parseToMB(memMaxSpinner.getValue().toString()));
+            try {
+                instance.save();
+                Main.logger.info("Instance saved!");
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        });
     }
 
     private void loadProfiles() {
@@ -456,6 +475,12 @@ public class GuiMain {
         loadJarMods(model, instance);
         loadLoaderMods(new DefaultListModel(), instance);
         loadWorlds(instance);
+        populateOptions(instance);
+    }
+
+    public void populateOptions(UnifiedMCInstance instance) {
+        memMaxSpinner.setModel(new MemoryModel(instance.getMaxMemory()));
+        memMinSpinner.setModel(new MemoryModel(instance.getMinMemory()));
     }
 
     public void loadJarMods(DefaultListModel model, UnifiedMCInstance instance) {
@@ -547,6 +572,47 @@ public class GuiMain {
         //region aboutLabel
         aboutLabel = setupLabelButton("/images/toolbar/about", () -> new AboutDialog().setVisible(true));
         //endregion aboutLabel
+        importWorldButton = setupLabelButton("/images/toolbar/new", this::importWorld);
+        exportWorldButton = setupLabelButton("/images/curseinstaller/download", this::compressWorld);
+    }
+
+    public void importWorld() {
+        UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select world");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Zip File", "zip"));
+        if (fileChooser.showDialog(panelMain, "Select") == JFileChooser.APPROVE_OPTION) {
+            File f = fileChooser.getSelectedFile();
+            try {
+                ZipFile zf = new ZipFile(f);
+                ZipEntry worldFolder = findWorldFolder(zf);
+                if (worldFolder != null) {
+                    File worldFolderOutput;
+                    Utils.extractEntryDirectory(worldFolderOutput = new File(instance.getLocation(), "saves" + File.separator + Utils.getZipEntryName(worldFolder)), zf, worldFolder);
+                    Main.logger.info("World Extracted");
+                    ((DefaultListModel) worldList.getModel()).addElement(new WorldInstance(worldFolderOutput));
+                } else {
+                    Main.logger.info("Invalid Zip");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public ZipEntry findWorldFolder(ZipFile file) {
+        Enumeration<? extends ZipEntry> entries = file.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            if (entry.getName().endsWith("level.dat")) {
+                return file.getEntry(entry.getName().substring(0, entry.getName().lastIndexOf("/")));
+            }
+        }
+        return null;
+    }
+
+    public void compressWorld() {
+
     }
 
     /**
@@ -700,30 +766,60 @@ public class GuiMain {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel6.add(separator2, gbc);
         final JPanel panel8 = new JPanel();
-        panel8.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel8.setLayout(new GridBagLayout());
         tabbedPane1.addTab("Worlds", panel8);
         worldList = new JList();
-        panel8.add(worldList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel8.add(worldList, gbc);
+        final JToolBar toolBar1 = new JToolBar();
+        toolBar1.setFloatable(false);
+        toolBar1.setOrientation(1);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel8.add(toolBar1, gbc);
+        importWorldButton.setText("");
+        toolBar1.add(importWorldButton);
+        exportWorldButton.setText("");
+        toolBar1.add(exportWorldButton);
         final JPanel panel9 = new JPanel();
-        panel9.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel9.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Options", panel9);
         final JPanel panel10 = new JPanel();
-        panel10.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panelMain.add(panel10, BorderLayout.SOUTH);
-        comboBox1 = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        defaultComboBoxModel1.addElement("Select an Account");
-        comboBox1.setModel(defaultComboBoxModel1);
-        panel10.add(comboBox1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        launchButton = new JButton();
-        launchButton.setEnabled(false);
-        launchButton.setHorizontalAlignment(0);
-        launchButton.setHorizontalTextPosition(11);
-        launchButton.setText("Launch");
-        panel10.add(launchButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel10.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel9.add(panel10, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel10.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Memory"));
+        memMinSpinner = new JSpinner();
+        panel10.add(memMinSpinner, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        panel10.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final JLabel label1 = new JLabel();
+        label1.setText("Minimum Memory");
+        panel10.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label2 = new JLabel();
+        label2.setText("Maximum Memory");
+        panel10.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        memMaxSpinner = new JSpinner();
+        panel10.add(memMaxSpinner, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        panel9.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        saveButton = new JButton();
+        saveButton.setText("Save");
+        panel9.add(saveButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel11 = new JPanel();
-        panel11.setLayout(new GridBagLayout());
-        panel10.add(panel11, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel11.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panelMain.add(panel11, BorderLayout.SOUTH);
+        final JPanel panel12 = new JPanel();
+        panel12.setLayout(new GridBagLayout());
+        panel11.add(panel12, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JSeparator separator3 = new JSeparator();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -731,13 +827,13 @@ public class GuiMain {
         gbc.gridwidth = 4;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        panel11.add(separator3, gbc);
+        panel12.add(separator3, gbc);
         statusProgresBar = new JProgressBar();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        panel11.add(statusProgresBar, gbc);
+        panel12.add(statusProgresBar, gbc);
         statusLabel = new JLabel();
         statusLabel.setText("Status");
         gbc = new GridBagConstraints();
@@ -745,29 +841,56 @@ public class GuiMain {
         gbc.gridy = 1;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        panel11.add(statusLabel, gbc);
-        final JToolBar toolBar1 = new JToolBar();
-        toolBar1.setOrientation(1);
-        panelMain.add(toolBar1, BorderLayout.WEST);
+        panel12.add(statusLabel, gbc);
+        final JPanel panel13 = new JPanel();
+        panel13.setLayout(new GridBagLayout());
+        panel11.add(panel13, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        comboBox1 = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
+        defaultComboBoxModel1.addElement("Select an Account");
+        comboBox1.setModel(defaultComboBoxModel1);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel13.add(comboBox1, gbc);
+        launchButton = new JButton();
+        launchButton.setEnabled(false);
+        launchButton.setHorizontalAlignment(0);
+        launchButton.setHorizontalTextPosition(11);
+        launchButton.setText("Launch");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.EAST;
+        panel13.add(launchButton, gbc);
+        final JToolBar toolBar2 = new JToolBar();
+        toolBar2.setFloatable(false);
+        toolBar2.setOrientation(1);
+        panelMain.add(toolBar2, BorderLayout.WEST);
         newLabel.setText("");
         newLabel.setToolTipText("New Instance");
-        toolBar1.add(newLabel);
+        toolBar2.add(newLabel);
         importLabel.setText("");
         importLabel.setToolTipText("Import");
-        toolBar1.add(importLabel);
+        toolBar2.add(importLabel);
         exportLabel.setText("");
         exportLabel.setToolTipText("Export Instance");
-        toolBar1.add(exportLabel);
+        toolBar2.add(exportLabel);
         removeLabel.setText("");
         removeLabel.setToolTipText("Remove Instance");
-        toolBar1.add(removeLabel);
+        toolBar2.add(removeLabel);
         aboutLabel.setHorizontalAlignment(4);
         aboutLabel.setText("");
         aboutLabel.setToolTipText("About");
-        toolBar1.add(aboutLabel);
+        toolBar2.add(aboutLabel);
         accountsLabel.setText("");
         accountsLabel.setToolTipText("Accounts");
-        toolBar1.add(accountsLabel);
+        toolBar2.add(accountsLabel);
     }
 
     /**
