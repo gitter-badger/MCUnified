@@ -31,11 +31,22 @@ public class ForgeMod {
             JarFile jar = new JarFile(mod);
             JarEntry info = jar.getJarEntry("mcmod.info");
             if(info!=null) {
-                JSONObject obj = (JSONObject)((JSONArray) JSONValue.parse(jar.getInputStream(info))).get(0);
+                Object json = JSONValue.parse(jar.getInputStream(info));
+                JSONArray arr;
+                if(json instanceof JSONArray) {
+                    arr = (JSONArray)json;
+                } else if(json instanceof JSONObject) {
+                    arr = (JSONArray)((JSONObject)json).get("modList");
+                } else {
+                    throw new IllegalArgumentException("Invalid mod");
+                }
+                JSONObject obj = (JSONObject)arr.get(0);
                 name = obj.get("name").toString();
                 version = obj.get("version").toString();
                 description = obj.get("description").toString();
                 authors = ((JSONArray) obj.get("authorList")).stream().map(s -> (String)s).toArray(String[]::new);
+            } else {
+                throw new IllegalArgumentException("Invalid mod");
             }
         } catch (IOException e) {
             e.printStackTrace();
