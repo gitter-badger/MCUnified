@@ -113,6 +113,11 @@ public class DialogDownloadMod extends JDialog {
         if (!outputDir.exists())
             outputDir.mkdirs();
         instance.mods.addAll(artifacts.stream().map(CurseArtifact::toString).filter(o -> !instance.mods.contains(o)).collect(Collectors.toList()));
+        try {
+            instance.save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ProgressMonitorWorker worker = new ProgressMonitorWorker(iProgressMonitor -> {
             iProgressMonitor.setMax((int) (totalSize));
             for (int i = 0; i < artifacts.size(); i++) {
