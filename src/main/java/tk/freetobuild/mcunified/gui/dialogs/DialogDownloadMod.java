@@ -33,6 +33,8 @@ public class DialogDownloadMod extends JDialog {
     private JButton buttonCancel;
     private JProgressBar progressBar1;
     private JLabel statusLabel;
+    private SwingWorker worker;
+    private boolean finished = false;
 
     public DialogDownloadMod(UnifiedMCInstance instance, CurseArtifact artifact) {
         setPreferredSize(new Dimension(320, 120));
@@ -64,7 +66,7 @@ public class DialogDownloadMod extends JDialog {
         });
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         pack();
-        new SwingWorker<List<CurseArtifact>, Void>() {
+        worker = new SwingWorker<List<CurseArtifact>, Void>() {
             @Override
             protected List<CurseArtifact> doInBackground() throws Exception {
                 List<CurseArtifact> artifacts = new ArrayList<>();
@@ -77,17 +79,23 @@ public class DialogDownloadMod extends JDialog {
             protected void done() {
                 try {
                     progressBar1.setIndeterminate(false);
-                    doDownloads(logger, handler, instance, get());
+                    if (!worker.isCancelled())
+                        doDownloads(logger, handler, instance, get());
+                    else
+                        DialogDownloadMod.this.dispose();
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
             }
-        }.execute();
+        };
+        worker.execute();
     }
 
     private void onCancel() {
-// add your code here if necessary
-        dispose();
+        if (finished)
+            dispose();
+        else if (worker != null)
+            worker.cancel(false);
     }
 
     private List<CurseArtifact> getArtifacts(UnifiedMCInstance instance, CurseArtifact artifact) {
@@ -118,7 +126,7 @@ public class DialogDownloadMod extends JDialog {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ProgressMonitorWorker worker = new ProgressMonitorWorker(iProgressMonitor -> {
+        worker = new ProgressMonitorWorker((iProgressMonitor, w) -> {
             iProgressMonitor.setMax((int) (totalSize));
             for (int i = 0; i < artifacts.size(); i++) {
                 CurseArtifact a = artifacts.get(i);
@@ -128,22 +136,37 @@ public class DialogDownloadMod extends JDialog {
                     InputStream is = new URL(a.getDownload()).openStream();
                     FileOutputStream fos = new FileOutputStream(new File(outputDir, a.getName()));
                     while (true) {
+                        if (w.isCancelled()) {
+                            i = artifacts.size();
+                            break;
+                        }
                         int r = is.read(buf);
                         if (r == -1)
                             break;
                         fos.write(buf, 0, r);
                         iProgressMonitor.incrementProgress(r);
                     }
+                    fos.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        }, () -> {
+            if (w.isCancelled()) {
+                artifacts.forEach(artifact -> {
+                    File f = new File(outputDir, artifact.getName());
+                    if (f.exists())
+                        f.delete();
+                });
+            }
+        }, (worker) -> {
             statusLabel.setText("Download Complete");
             buttonCancel.setText("Close");
             progressBar1.setVisible(false);
             logger.removeHandler(handler);
             Main.gui.loadLoaderMods((DefaultListModel) Main.gui.loaderModList.getModel(), instance);
+            finished = true;
+            if (worker.isCancelled())
+                DialogDownloadMod.this.dispose();
         });
 
         worker.addPropertyChangeListener(new ProgressMonitorListener(logger, progressBar1));

@@ -503,7 +503,11 @@ public class GuiMain {
         if (!jarMods.exists())
             jarMods.mkdirs();
         for (File file : jarMods.listFiles()) {
-            model.addElement(new ForgeMod(file));
+            try {
+                model.addElement(new ForgeMod(file));
+            } catch(Exception ex) {
+
+            }
         }
         loaderModList.setModel(model);
     }
