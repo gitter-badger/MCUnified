@@ -124,6 +124,7 @@ public class ForgeArtifact {
         patch.remove("inheritsFrom");
         patch.remove("jar");
         patch.put("friendlyName","Forge-"+this.version);
+        patch.put("forgeBuild",this.build);
         try
         {
             version.extractFile(targetLibraryFile);
