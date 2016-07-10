@@ -1,5 +1,8 @@
 package tk.freetobuild.mcunified;
 
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -76,5 +79,18 @@ public class Utils {
     }
     public static String getZipEntryName(ZipEntry entry) {
         return new File(entry.getName()).getName();
+    }
+    public static JSONObject buildModpack(UnifiedMCInstance instance, String name, String version, String author, String desc) {
+        JSONObject result = instance.getJSONObject();
+        result.put("name",name);
+        result.put("version",result.get("version"));
+        result.put("author",author);
+        result.put("description",desc);
+        result.put("version",version);
+        result.put("config",new JSONArray());
+        JSONArray patches = (JSONArray) result.get("patches");
+        patches.stream().map(o->(JSONObject)o).filter(o->o.containsKey("forgeBuild")).forEach(o->result.put("forge",o.get("forgeBuild")));
+        result.remove("patches");
+        return result;
     }
 }

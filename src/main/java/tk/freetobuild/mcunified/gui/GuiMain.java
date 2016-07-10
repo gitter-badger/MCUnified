@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.sun.corba.se.spi.activation.Server;
+import jdk.nashorn.internal.ir.debug.JSONWriter;
 import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDAuthProfile;
 import tk.freetobuild.mcunified.Utils;
 import tk.freetobuild.mcunified.Main;
@@ -505,7 +506,7 @@ public class GuiMain {
         for (File file : jarMods.listFiles()) {
             try {
                 model.addElement(new ForgeMod(file));
-            } catch(Exception ex) {
+            } catch (Exception ex) {
 
             }
         }
@@ -554,8 +555,7 @@ public class GuiMain {
         });
         //endregion newInstance
         //region export
-        exportLabel = setupLabelButton("/images/toolbar/export", () -> {
-        });
+        exportLabel = setupLabelButton("/images/toolbar/export", this::exportInstance);
         //endregion export
         //region removeLabel
         removeLabel = setupLabelButton("/images/toolbar/remove", () -> {
@@ -637,6 +637,31 @@ public class GuiMain {
                     zos.closeEntry();
                     Utils.zipDirectory(zos, inputFolder, inputFolder.getName() + "/");
                     zos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void exportInstance() {
+        if (!instanceList.isSelectionEmpty()) {
+            UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+            fileChooser.setDialogTitle("Export Instance as Modpack");
+            fileChooser.setFileFilter(new FileNameExtensionFilter("MCUnified Modpack", "json"));
+            if (fileChooser.showDialog(panelMain, "Export") == JFileChooser.APPROVE_OPTION) {
+                File f = fileChooser.getSelectedFile();
+                if (!f.getName().endsWith(".json"))
+                    f = new File(f.getPath() + ".json");
+                if (!f.getParentFile().exists())
+                    f.getParentFile().mkdirs();
+                JSONObject object = Utils.buildModpack(instance, "Build", "a", "Dialog", "Soon");
+                try {
+                    FileWriter writer = new FileWriter(f);
+                    object.writeJSONString(writer);
+                    writer.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

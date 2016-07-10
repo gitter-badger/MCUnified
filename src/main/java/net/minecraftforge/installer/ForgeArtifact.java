@@ -133,58 +133,6 @@ public class ForgeArtifact {
         {
             throw new ForgeInstallException("There was a problem writing the system library file");
         }
-
-        JdomParser parser = new JdomParser();
-        JsonRootNode jsonProfileData;
-
-        try
-        {
-            jsonProfileData = parser.parse(Files.newReader(launcherProfiles, Charsets.UTF_8));
-        }
-        catch (InvalidSyntaxException e)
-        {
-            JOptionPane.showMessageDialog(null, "The launcher profile file is corrupted. Re-run the minecraft launcher to fix it!", "Error", JOptionPane.ERROR_MESSAGE);
-            throw new ForgeInstallException("There was a problem writing the system library file");
-        }
-        catch (Exception e)
-        {
-            throw Throwables.propagate(e);
-        }
-
-
-
-
-        HashMap<JsonStringNode, JsonNode> profileCopy = Maps.newHashMap(jsonProfileData.getNode("profiles").getFields());
-        HashMap<JsonStringNode, JsonNode> rootCopy = Maps.newHashMap(jsonProfileData.getFields());
-        if(profileCopy.containsKey(JsonNodeFactories.string(version.getProfileName())))
-        {
-            HashMap<JsonStringNode, JsonNode> forgeProfileCopy = Maps.newHashMap(profileCopy.get(JsonNodeFactories.string(version.getProfileName())).getFields());
-            forgeProfileCopy.put(JsonNodeFactories.string("name"), JsonNodeFactories.string(version.getProfileName()));
-            forgeProfileCopy.put(JsonNodeFactories.string("lastVersionId"), JsonNodeFactories.string(version.getVersionTarget()));
-        }
-        else
-        {
-            JsonField[] fields = new JsonField[] {
-                    JsonNodeFactories.field("name", JsonNodeFactories.string(version.getProfileName())),
-                    JsonNodeFactories.field("lastVersionId", JsonNodeFactories.string(version.getVersionTarget())),
-            };
-            profileCopy.put(JsonNodeFactories.string(version.getProfileName()), JsonNodeFactories.object(fields));
-        }
-        JsonRootNode profileJsonCopy = JsonNodeFactories.object(profileCopy);
-        rootCopy.put(JsonNodeFactories.string("profiles"), profileJsonCopy);
-
-        jsonProfileData = JsonNodeFactories.object(rootCopy);
-
-        try
-        {
-            BufferedWriter newWriter = Files.newWriter(launcherProfiles, Charsets.UTF_8);
-            PrettyJsonFormatter.fieldOrderPreservingPrettyJsonFormatter().format(jsonProfileData,newWriter);
-            newWriter.close();
-        }
-        catch (Exception e)
-        {
-            throw new ForgeInstallException("There was a problem writing the launch profile,  is it write protected?");
-        }
         return patch;
     }
 }
