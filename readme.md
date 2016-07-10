@@ -7,9 +7,9 @@
 - [X] Jar mods
 - [X] Forge Mods
 - [X] Install Forge
-- [ ] World Management
-- [ ] One-Click mod installing
-- [ ] Mod pack importing
+- [X] World Management
+- [X] One-Click mod installing
+- [ ] Mod pack importing/exporting
 - [ ] Mod pack json installing
 
 ## One-Click mod installing
