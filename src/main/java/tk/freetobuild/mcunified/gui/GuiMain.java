@@ -657,13 +657,17 @@ public class GuiMain {
                     f = new File(f.getPath() + ".json");
                 if (!f.getParentFile().exists())
                     f.getParentFile().mkdirs();
-                JSONObject object = Utils.buildModpack(instance, "Build", "a", "Dialog", "Soon");
-                try {
-                    FileWriter writer = new FileWriter(f);
-                    object.writeJSONString(writer);
-                    writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                DialogCreateModpack dcm = new DialogCreateModpack(instance);
+                dcm.setVisible(true);
+                if (!dcm.isCancelled()) {
+                    JSONObject object = Utils.buildModpack(instance, dcm.getNameResult(), dcm.getVersion(), dcm.getAuthor(), dcm.getDescription(), dcm.getConfigObject());
+                    try {
+                        FileWriter writer = new FileWriter(f);
+                        object.writeJSONString(writer);
+                        writer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
