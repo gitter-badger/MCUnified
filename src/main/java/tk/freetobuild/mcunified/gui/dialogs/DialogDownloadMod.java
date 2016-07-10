@@ -35,11 +35,46 @@ public class DialogDownloadMod extends JDialog {
     private JLabel statusLabel;
     private SwingWorker worker;
     private boolean finished = false;
+    private Logger logger;
+    private Handler handler;
 
     public DialogDownloadMod(UnifiedMCInstance instance, CurseArtifact artifact) {
+        initialize();
+        worker = new SwingWorker<List<CurseArtifact>, Void>() {
+            @Override
+            protected List<CurseArtifact> doInBackground() throws Exception {
+                List<CurseArtifact> artifacts = new ArrayList<>();
+                artifacts.add(artifact);
+                artifacts.addAll(artifact.getAllDependencies());
+                return artifacts;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    progressBar1.setIndeterminate(false);
+                    if (!worker.isCancelled())
+                        doDownloads(instance, get());
+                    else
+                        DialogDownloadMod.this.dispose();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        worker.execute();
+    }
+
+    public DialogDownloadMod(UnifiedMCInstance instance, List<CurseArtifact> artifacts) {
+        initialize();
+        progressBar1.setIndeterminate(false);
+        doDownloads(instance, artifacts);
+    }
+
+    private void initialize() {
         setPreferredSize(new Dimension(320, 120));
-        Logger logger = Logger.getLogger("Download");
-        Handler handler = new Handler() {
+        logger = Logger.getLogger("Download");
+        handler = new Handler() {
             @Override
             public void publish(LogRecord record) {
                 statusLabel.setText(record.getMessage());
@@ -66,29 +101,6 @@ public class DialogDownloadMod extends JDialog {
         });
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         pack();
-        worker = new SwingWorker<List<CurseArtifact>, Void>() {
-            @Override
-            protected List<CurseArtifact> doInBackground() throws Exception {
-                List<CurseArtifact> artifacts = new ArrayList<>();
-                artifacts.add(artifact);
-                artifacts.addAll(artifact.getAllDependencies());
-                return artifacts;
-            }
-
-            @Override
-            protected void done() {
-                try {
-                    progressBar1.setIndeterminate(false);
-                    if (!worker.isCancelled())
-                        doDownloads(logger, handler, instance, get());
-                    else
-                        DialogDownloadMod.this.dispose();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        worker.execute();
     }
 
     private void onCancel() {
@@ -108,7 +120,7 @@ public class DialogDownloadMod extends JDialog {
         return urls;
     }
 
-    public void doDownloads(Logger logger, Handler handler, UnifiedMCInstance instance, List<CurseArtifact> artifacts) {
+    public void doDownloads(UnifiedMCInstance instance, List<CurseArtifact> artifacts) {
         long totalSize = artifacts.stream().mapToLong(a -> {
             try {
                 return Utils.getFileSize(new URL(a.getDownload()));

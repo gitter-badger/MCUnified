@@ -46,6 +46,8 @@ public class UnifiedMCInstance extends MinecraftInstance {
         minMemory = (int)options.getOrDefault("minMemory",minMemory);
         maxMemory = (int)options.getOrDefault("maxMemory",maxMemory);
     }
+
+
     private void loadPatches(JSONArray patches) {
         patches.forEach(obj -> {
             JSONObject json = (JSONObject) obj;

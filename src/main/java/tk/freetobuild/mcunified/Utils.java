@@ -1,8 +1,15 @@
 package tk.freetobuild.mcunified;
 
+import net.minecraftforge.installer.ForgeArtifact;
+import net.minecraftforge.installer.ForgeVersionList;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import tk.freetobuild.mcunified.curse.CurseArtifact;
+import tk.freetobuild.mcunified.gui.dialogs.DialogDownloadMod;
+import tk.freetobuild.mcunified.gui.dialogs.DialogInstallForge;
+import tk.freetobuild.mcunified.gui.workers.ForgeInstallerWorker;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -11,6 +18,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -83,7 +91,7 @@ public class Utils {
     public static JSONObject buildModpack(UnifiedMCInstance instance, String name, String version, String author, String desc, JSONObject config) {
         JSONObject result = instance.getJSONObject();
         result.put("name",name);
-        result.put("version",result.get("version"));
+        result.put("mcversion",result.get("version"));
         result.put("author",author);
         result.put("description",desc);
         result.put("version",version);
@@ -91,6 +99,26 @@ public class Utils {
         JSONArray patches = (JSONArray) result.get("patches");
         patches.stream().map(o->(JSONObject)o).filter(o->o.containsKey("forgeBuild")).forEach(o->result.put("forge",o.get("forgeBuild")));
         result.remove("patches");
+        return result;
+    }
+    public static UnifiedMCInstance installModpack(String name, JSONObject modpack) {
+        File dir = new File(Main.baseDir,"instances"+File.separator+name);
+        if(!dir.exists())
+            dir.mkdirs();
+        UnifiedMCInstance result = new UnifiedMCInstance(name,modpack.get("mcversion").toString());
+        if(modpack.containsKey("forge")) {
+            ForgeVersionList.refreshList();
+            ForgeArtifact artifact = ForgeVersionList.getArtifact((int) modpack.get("forge"));
+            new ForgeInstallerWorker(artifact, patch -> {
+                try {
+                    result.addPatch(patch);
+                } catch (IOException ignored) {
+                }
+            }).execute();
+        }
+        JSONArray mods = (JSONArray) modpack.getOrDefault("mods",new JSONArray());
+        DialogDownloadMod dialogDownloadMod = new DialogDownloadMod(result,mods.stream().map(o->new CurseArtifact(o.toString())).collect(Collectors.toList()));
+        dialogDownloadMod.setVisible(true);
         return result;
     }
 }

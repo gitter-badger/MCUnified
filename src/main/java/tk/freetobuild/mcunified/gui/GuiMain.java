@@ -539,6 +539,8 @@ public class GuiMain {
     public void loadWorlds(UnifiedMCInstance instance) {
         DefaultListModel model = new DefaultListModel();
         File saves = new File(instance.getLocation(), "saves");
+        if(!saves.exists())
+            saves.mkdirs();
         for (File f : saves.listFiles()) {
             model.addElement(new WorldInstance(f));
         }
@@ -551,8 +553,7 @@ public class GuiMain {
         newLabel = setupLabelButton("/images/toolbar/new", () -> new DialogNewInstance(GuiMain.this).setVisible(true));
         //endregion newInstance
         //region import
-        importLabel = setupLabelButton("/images/toolbar/import", () -> {
-        });
+        importLabel = setupLabelButton("/images/toolbar/import", this::importModpack);
         //endregion newInstance
         //region export
         exportLabel = setupLabelButton("/images/toolbar/export", this::exportInstance);
@@ -600,6 +601,24 @@ public class GuiMain {
                 } else {
                     Main.logger.info("Invalid Zip");
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void importModpack() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Modpack Descriptor", "json"));
+        fileChooser.setDialogTitle("Import Modpack");
+        if (fileChooser.showDialog(panelMain, "Import") == JFileChooser.APPROVE_OPTION) {
+            File f = fileChooser.getSelectedFile();
+            try {
+                JSONObject object = (JSONObject) JSONValue.parse(new FileInputStream(f));
+                UnifiedMCInstance modpack = Utils.installModpack(object.get("name").toString(), object);
+                modpack.save();
+                ((DefaultListModel) instanceList.getModel()).addElement(modpack);
             } catch (IOException e) {
                 e.printStackTrace();
             }
