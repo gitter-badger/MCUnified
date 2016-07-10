@@ -47,6 +47,7 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by liz on 6/22/16.
@@ -580,6 +581,7 @@ public class GuiMain {
         UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select world");
+        fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
         fileChooser.setFileFilter(new FileNameExtensionFilter("Zip File", "zip"));
         if (fileChooser.showDialog(panelMain, "Select") == JFileChooser.APPROVE_OPTION) {
             File f = fileChooser.getSelectedFile();
@@ -612,7 +614,30 @@ public class GuiMain {
     }
 
     public void compressWorld() {
-
+        if (!worldList.isSelectionEmpty()) {
+            WorldInstance world = (WorldInstance) worldList.getSelectedValue();
+            File inputFolder = world.getDir();
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Export world");
+            fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Zip File", "zip"));
+            if (fileChooser.showDialog(panelMain, "Export") == JFileChooser.APPROVE_OPTION) {
+                File outputFile = fileChooser.getSelectedFile();
+                if (!outputFile.getName().endsWith(".zip"))
+                    outputFile = new File(outputFile.getPath() + ".zip");
+                if (!outputFile.getParentFile().exists())
+                    outputFile.getParentFile().mkdirs();
+                try {
+                    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(outputFile));
+                    zos.putNextEntry(new ZipEntry(inputFolder.getName() + "/"));
+                    zos.closeEntry();
+                    Utils.zipDirectory(zos, inputFolder, inputFolder.getName() + "/");
+                    zos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**

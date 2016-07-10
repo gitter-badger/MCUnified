@@ -10,6 +10,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by liz on 6/28/16.
@@ -55,6 +57,21 @@ public class Utils {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+        }
+    }
+    public static void zipDirectory(ZipOutputStream os, File dir, String prefix) throws IOException {
+        for(File f : dir.listFiles()) {
+            if(f.isDirectory()) {
+                ZipEntry entry = new ZipEntry(prefix+f.getName()+"/");
+                os.putNextEntry(entry);
+                os.closeEntry();
+                zipDirectory(os,f,prefix+f.getName()+"/");
+            } else {
+                ZipEntry entry = new ZipEntry(prefix+f.getName());
+                os.putNextEntry(entry);
+                Files.copy(f.toPath(),os);
+                os.closeEntry();
+            }
         }
     }
     public static String getZipEntryName(ZipEntry entry) {
