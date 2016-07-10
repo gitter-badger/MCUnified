@@ -21,7 +21,11 @@ MCUnified uses json to set up Custom Modpacks which it reads and installs the mo
 {
     "name": "Name of modpack",
     "forge": 1321,
-    "mods": ["modname:12473","secondmod:1351"],
+    "version": "version of modpack",
+    "mcversion": "version of minecraft",
+    "description", "description of modpack",
+    "author", "author of modpack"
+    "mods": ["modname:1234:modname-1234.jar","secondmod:4321:modname-4321.jar"],
     "config": [ 
     {
         "file": "modname.txt",
@@ -33,7 +37,11 @@ MCUnified uses json to set up Custom Modpacks which it reads and installs the mo
 |key|type|value|
 |---|----|-----|
 |name|String|The name of the modpack|
-|forge|Integer|The build number of forge to install|
+|forge|Integer (Optional)|The build number of forge to install|
+|version|String|The version of modpack|
+|mcversion|String|The version of minecraft|
+|description|String|Description of the modpack|
+|author|String|Author of modpack|
 |mods|String array|An array of identifiers for a mod's file, this is obtained through the launcher|
 |config|Object array|An array of objects that hold the file name to write and the text to write to the file|
 
