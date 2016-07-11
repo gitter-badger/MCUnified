@@ -31,6 +31,17 @@
         code.css("transform","scale(1,1)");
       }
     },400);
+    setInterval(function() {
+      $.get("https://api.github.com/repos/lizfransen/MCUnifiedUpdater/releases",{},function(data){
+        var result = 0;
+        data.forEach(function(obj){
+          obj.assets.forEach(function(asset){
+            result = result + asset.download_count;
+          });
+        });
+        $("#downloads").text(result);
+      })
+    },5000);
     // jQuery for page scrolling feature - requires jQuery Easing plugin
     $('a.page-scroll').bind('click', function(event) {
         var $anchor = $(this);
