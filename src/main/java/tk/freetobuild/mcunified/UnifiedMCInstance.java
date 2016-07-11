@@ -1,5 +1,6 @@
 package tk.freetobuild.mcunified;
 
+import tk.freetobuild.mcunified.gui.dialogs.DialogMinecraftMonitor;
 import tk.freetobuild.mcunified.gui.workers.ProgressMonitorListener;
 import tk.freetobuild.mcunified.gui.workers.ProgressMonitorWorker;
 import net.minidev.json.JSONArray;
@@ -131,9 +132,11 @@ public class UnifiedMCInstance extends MinecraftInstance {
                     }
                 }, moddingProfile);
                 builder.command().set(builder.command().indexOf("--gameDir")+1,getLocation().getAbsolutePath());
-                builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+                //builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
                 builder.directory(getLocation());
-                builder.start();
+                Process p = builder.start();
+                DialogMinecraftMonitor dmm = new DialogMinecraftMonitor(p);
+                dmm.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }

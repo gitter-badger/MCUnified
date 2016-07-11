@@ -3,12 +3,18 @@ package tk.freetobuild.mcunified.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.sun.corba.se.spi.activation.Server;
-import jdk.nashorn.internal.ir.debug.JSONWriter;
+import net.minecraftforge.installer.ForgeArtifact;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import sk.tomsik68.mclauncher.api.login.IProfile;
+import sk.tomsik68.mclauncher.api.servers.ServerInfo;
+import sk.tomsik68.mclauncher.impl.common.Platform;
+import sk.tomsik68.mclauncher.impl.common.mc.VanillaServerStorage;
 import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDAuthProfile;
-import tk.freetobuild.mcunified.Utils;
+import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDProfileIO;
 import tk.freetobuild.mcunified.Main;
 import tk.freetobuild.mcunified.UnifiedMCInstance;
+import tk.freetobuild.mcunified.Utils;
 import tk.freetobuild.mcunified.WorldInstance;
 import tk.freetobuild.mcunified.curse.ForgeMod;
 import tk.freetobuild.mcunified.gui.cellrenderers.AccountCellRenderer;
@@ -20,22 +26,9 @@ import tk.freetobuild.mcunified.gui.dialogs.*;
 import tk.freetobuild.mcunified.gui.workers.ForgeInstallerWorker;
 import tk.freetobuild.mcunified.gui.workers.ProgressMonitorListener;
 import tk.freetobuild.mcunified.gui.workers.ProgressMonitorWorker;
-import net.minecraftforge.installer.ForgeArtifact;
-import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
-import sk.tomsik68.mclauncher.api.login.IProfile;
-import sk.tomsik68.mclauncher.api.servers.ServerInfo;
-import sk.tomsik68.mclauncher.impl.common.Platform;
-import sk.tomsik68.mclauncher.impl.common.mc.VanillaServerStorage;
-import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDProfileIO;
-import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDServiceAuthenticationException;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -90,7 +83,7 @@ public class GuiMain {
     private JButton saveButton;
     private JLabel importWorldButton;
     private JLabel exportWorldButton;
-    MainFrame parent;
+    public MainFrame parent;
 
     public GuiMain(MainFrame parent) {
         super();
@@ -184,6 +177,7 @@ public class GuiMain {
         launchButton.addActionListener(e -> {
             try {
                 UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
+                GuiMain.this.parent.setVisible(false);
                 instance.launch(((IProfile) comboBox1.getSelectedItem()).getName());
             } catch (Exception e1) {
                 e1.printStackTrace();
