@@ -21,9 +21,9 @@ public class DialogSelectPlayer extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JComboBox<Object> comboBox1;
+    public JComboBox comboBox1;
     private UnifiedMCInstance instance;
-    private String server = "";
+    public String server = "";
 
     public DialogSelectPlayer() {
         try {

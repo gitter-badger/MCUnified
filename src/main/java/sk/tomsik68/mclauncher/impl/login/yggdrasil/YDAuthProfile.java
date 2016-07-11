@@ -13,7 +13,9 @@ public final class YDAuthProfile implements IProfile, IJSONSerializable {
     private String accessToken;
     private String profileName = "(Default)";
 
-    private YDAuthProfile(String name, String displayName, String sessid, String uuid, String userId) {
+    private final String SKINS_ROOT = "http://skins.minecraft.net/MinecraftSkins/";
+
+    public YDAuthProfile(String name, String displayName, String sessid, String uuid, String userId) {
         this.userName = name;
         this.accessToken = sessid;
         this.uuid = uuid;
@@ -55,7 +57,7 @@ public final class YDAuthProfile implements IProfile, IJSONSerializable {
         return accessToken;
     }
 
-    private void setPassword(String sessionID) {
+    public void setPassword(String sessionID) {
         accessToken = sessionID;
     }
 
@@ -76,7 +78,8 @@ public final class YDAuthProfile implements IProfile, IJSONSerializable {
     }
 
     YDPartialGameProfile getYDGameProfile() {
-        return new YDPartialGameProfile(userName, uuid);
+        YDPartialGameProfile result = new YDPartialGameProfile(userName, uuid, false);
+        return result;
     }
 
     String getUserId() {
@@ -85,7 +88,6 @@ public final class YDAuthProfile implements IProfile, IJSONSerializable {
 
     @Override
     public String getSkinURL() {
-        String SKINS_ROOT = "http://skins.minecraft.net/MinecraftSkins/";
         StringBuilder url = new StringBuilder(SKINS_ROOT);
         url = url.append(getDisplayName()).append(".png");
         return url.toString();

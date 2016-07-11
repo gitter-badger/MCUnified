@@ -11,27 +11,27 @@ public interface IOperatingSystem {
     /**
      * @return Human-readable name of the operating system e.g. "Windows XP"
      */
-    String getDisplayName();
+    public String getDisplayName();
 
     /**
      * @return Minecraft's name for this os (win/linux/osx/...)
      */
-    String getMinecraftName();
+    public String getMinecraftName();
 
     /**
      * @return If this pc's operating system matches this interface, return
      * true.
      */
-    boolean isCurrent();
+    public boolean isCurrent();
 
     /**
      * @return Minecraft working directory on this OS
      */
-    File getWorkingDirectory();
+    public File getWorkingDirectory();
 
     /**
      * @return Architecture of this system
      */
-    String getArchitecture();
+    public String getArchitecture();
 
 }

@@ -6,6 +6,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import net.minidev.json.JSONObject;
 import tk.freetobuild.mcunified.UnifiedMCInstance;
 import tk.freetobuild.mcunified.gui.cellrenderers.CheckBoxNodeRenderer;
+import tk.freetobuild.mcunified.gui.components.CheckBoxNode;
 import tk.freetobuild.mcunified.gui.components.CheckBoxNodeEditor;
 import tk.freetobuild.mcunified.gui.components.ConfigCheckBoxNode;
 import tk.freetobuild.mcunified.gui.components.NamedVector;
@@ -14,18 +15,18 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
 public class DialogCreateModpack extends JDialog {
-    private final UnifiedMCInstance instance;
+    private UnifiedMCInstance instance;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -70,18 +71,15 @@ public class DialogCreateModpack extends JDialog {
         pack();
     }
 
-    private void addFiles(File dir, NamedVector parent, String prefix) {
+    public void addFiles(File dir, Vector parent, String prefix) {
         if (dir.exists()) {
-            File[] files = dir.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (f.isDirectory()) {
-                        NamedVector folder = new NamedVector(f.getName());
-                        addFiles(f, folder, f.getName() + File.separator);
-                        parent.addElement(folder);
-                    } else {
-                        parent.addElement(new ConfigCheckBoxNode(f, prefix, true));
-                    }
+            for (File f : dir.listFiles()) {
+                if (f.isDirectory()) {
+                    Vector folder = new NamedVector(f.getName());
+                    addFiles(f, folder, f.getName() + File.separator);
+                    parent.addElement(folder);
+                } else {
+                    parent.addElement(new ConfigCheckBoxNode(f, prefix, true));
                 }
             }
         }
@@ -129,7 +127,7 @@ public class DialogCreateModpack extends JDialog {
         loading.setVisible(true);
     }
 
-    private void addConfigFiles(JSONObject object, NamedVector v) {
+    private void addConfigFiles(JSONObject object, Vector v) {
         v.forEach(e -> {
             if (e instanceof ConfigCheckBoxNode) {
                 ConfigCheckBoxNode node = (ConfigCheckBoxNode) e;
@@ -176,7 +174,7 @@ public class DialogCreateModpack extends JDialog {
     }
 
     private void createUIComponents() {
-        NamedVector root = new NamedVector("config");
+        Vector root = new NamedVector("config");
         addFiles(new File(instance.getLocation(), "config"), root, "");
         configTree = new JTree(root);
         configTree.setCellRenderer(new CheckBoxNodeRenderer());
@@ -230,6 +228,8 @@ public class DialogCreateModpack extends JDialog {
         final JLabel label4 = new JLabel();
         label4.setText("Description");
         panel3.add(label4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        descriptionField = new JTextArea();
+        panel3.add(descriptionField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final JLabel label5 = new JLabel();
         label5.setText("Config Files");
         panel3.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -238,10 +238,6 @@ public class DialogCreateModpack extends JDialog {
         configTree.setLargeModel(false);
         configTree.setRootVisible(true);
         scrollPane1.setViewportView(configTree);
-        final JScrollPane scrollPane2 = new JScrollPane();
-        panel3.add(scrollPane2, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        descriptionField = new JTextArea();
-        scrollPane2.setViewportView(descriptionField);
     }
 
     /**

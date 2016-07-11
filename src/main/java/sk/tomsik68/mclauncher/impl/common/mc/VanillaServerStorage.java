@@ -2,10 +2,15 @@ package sk.tomsik68.mclauncher.impl.common.mc;
 
 import com.flowpowered.nbt.*;
 import com.flowpowered.nbt.stream.NBTInputStream;
+import com.flowpowered.nbt.stream.NBTOutputStream;
+import sk.tomsik68.mclauncher.api.common.MCLauncherAPI;
 import sk.tomsik68.mclauncher.api.common.mc.MinecraftInstance;
 import sk.tomsik68.mclauncher.api.servers.ServerInfo;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +24,7 @@ public final class VanillaServerStorage {
         this(new File(mc.getLocation(), "servers.dat"));
     }
 
-    private VanillaServerStorage(File file){
+    public VanillaServerStorage(File file){
         this.file = file;
     }
 
@@ -57,10 +62,10 @@ public final class VanillaServerStorage {
         if(serversListTag.getElementType() != CompoundTag.class) {
             throw new Exception("Type of list value in servers file is not tag_compound!");
         }
-        List serversList = serversListTag.getValue();
+        List<CompoundTag> serversList = serversListTag.getValue();
         ServerInfo[] result = new ServerInfo[serversList.size()];
         for(int i = 0; i < serversList.size(); ++i){
-            result[i] = createServerFromTag(((CompoundTag)serversList.get(i)).getValue());
+            result[i] = createServerFromTag(serversList.get(i).getValue());
         }
         return result;
     }
@@ -79,5 +84,26 @@ public final class VanillaServerStorage {
     }
 
 
+    public void saveServers(ServerInfo[] servers) throws IOException {
+        if(file.exists())
+            if(!file.delete())
+                throw new IOException("Could not overwrite '".concat(file.getAbsolutePath()).concat("'"));
+        final FileOutputStream fos = new FileOutputStream(file);
+        NBTOutputStream nbtOutputStream = new NBTOutputStream(fos, false);
+        ArrayList<CompoundTag> serversList = new ArrayList<CompoundTag>();
+
+        for(ServerInfo server : servers){
+            serversList.add(new CompoundTag("", createCompoundFromServer(server)));
+        }
+
+        ListTag<CompoundTag> listTag = new ListTag<CompoundTag>("servers", CompoundTag.class, serversList);
+        CompoundTag root = new CompoundTag("", new CompoundMap());
+        root.getValue().put("servers", listTag);
+        nbtOutputStream.writeTag(root);
+        nbtOutputStream.flush();
+        fos.flush();
+        nbtOutputStream.close();
+        fos.close();
+    }
 }
 

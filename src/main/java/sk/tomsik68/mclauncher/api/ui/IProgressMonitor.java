@@ -15,21 +15,21 @@ public interface IProgressMonitor {
      * @param progress New progress value
      * @see IProgressMonitor#setMax(long)
      */
-    void setProgress(long progress);
+    public void setProgress(long progress);
 
     /**
      * Sets maximum progress value
      *
      * @param len Max progress value
      */
-    void setMax(long len);
+    public void setMax(long len);
 
     /**
      * Increments current progress value by <code>amount</code>
      *
      * @param amount How much
      */
-    void incrementProgress(long amount);
+    public void incrementProgress(long amount);
 
 
     /**
@@ -37,6 +37,6 @@ public interface IProgressMonitor {
      *
      * @param status - Status message to display to user near progress bar (e.g. "Downlading library net.minecraft:launchwrapper:0.1")
      */
-    void setStatus(String status);
+	public void setStatus(String status);
 
 }

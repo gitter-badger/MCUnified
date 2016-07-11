@@ -10,8 +10,8 @@ import java.util.function.Consumer;
  * Created by liz on 6/30/16.
  */
 public class ProgressMonitorWorker extends SwingWorker<Void,Void> {
-    private final BiConsumer<IProgressMonitor,ProgressMonitorWorker> toDo;
-    private final Consumer<ProgressMonitorWorker> onComplete;
+    private BiConsumer<IProgressMonitor,ProgressMonitorWorker> toDo;
+    private Consumer<ProgressMonitorWorker> onComplete;
     public ProgressMonitorWorker(BiConsumer<IProgressMonitor,ProgressMonitorWorker> toDo, Consumer<ProgressMonitorWorker> complete) {
         this.toDo = toDo;
         this.onComplete = complete;

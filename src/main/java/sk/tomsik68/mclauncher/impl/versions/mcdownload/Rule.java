@@ -25,7 +25,7 @@ final class Rule {
         return action;
     }
 
-    private IOperatingSystem getRestrictedOs() {
+    public IOperatingSystem getRestrictedOs() {
         return restrictedOs;
     }
 
@@ -62,7 +62,8 @@ final class Rule {
                     return true;
                 } else {
                     // if there's a version specified, compile it to a pattern and try to match it against system property "os.version"
-                    return Pattern.matches(restrictedOsVersionPattern, System.getProperty("os.version"));
+                    boolean result = Pattern.matches(restrictedOsVersionPattern, System.getProperty("os.version"));
+                    return result;
                 }
             } else {
                 // our OS is not restricted by this rule

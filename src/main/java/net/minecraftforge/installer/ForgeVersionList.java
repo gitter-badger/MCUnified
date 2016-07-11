@@ -11,12 +11,12 @@ import java.util.*;
  * Created by liz on 6/29/16.
  */
 public class ForgeVersionList {
-    private static final Map<String,List<ForgeArtifact>> versions = new HashMap<>();
-    private static final Map<Integer,ForgeArtifact> builds = new HashMap<>();
+    private static String versionURL="http://files.minecraftforge.net/maven/net/minecraftforge/forge/json";
+    private static Map<String,List<ForgeArtifact>> versions = new HashMap<>();
+    private static Map<Integer,ForgeArtifact> builds = new HashMap<>();
     public static void refreshList() {
         versions.clear();
         try {
-            String versionURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/json";
             JSONObject obj = (JSONObject) JSONValue.parse(new URL(versionURL).openStream());
             String baseURL = (String) obj.get("homepage");
             JSONObject builds = (JSONObject) obj.get("number");

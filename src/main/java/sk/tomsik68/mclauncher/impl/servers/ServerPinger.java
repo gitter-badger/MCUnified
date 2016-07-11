@@ -8,8 +8,10 @@ import javax.net.SocketFactory;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketImplFactory;
 import java.util.concurrent.Callable;
 
 final class ServerPinger implements Callable<ServerPingResult> {

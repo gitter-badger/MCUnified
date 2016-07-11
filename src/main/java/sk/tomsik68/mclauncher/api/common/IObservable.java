@@ -14,7 +14,7 @@ public interface IObservable<E> {
      *
      * @param obs Observer to add
      */
-    void addObserver(IObserver<E> obs);
+    public void addObserver(IObserver<E> obs);
 
     /**
      * Deletes specified observer, so that it will not longer receive updates
@@ -22,12 +22,12 @@ public interface IObservable<E> {
      *
      * @param obs Observer to delete
      */
-    void deleteObserver(IObserver<E> obs);
+    public void deleteObserver(IObserver<E> obs);
 
     /**
      * Notifies observers about change of specified Object.
      *
      * @param changedObj Object that changed.
      */
-    void notifyObservers(E changedObj);
+    public void notifyObservers(E changedObj);
 }

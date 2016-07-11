@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
  * Created by liz on 6/30/16.
  */
 public class CurseArtifact {
-    private final String modId;
+    private String modId;
     private ReleaseType releaseType;
-    private final String name;
-    private final String fileID;
+    private String name;
+    private String fileID;
     private String version;
     public enum ReleaseType {
-        ALPHA
+        RELEASE, ALPHA, BETA
     }
     public CurseArtifact(String modId, String version, String name, String fileID, ReleaseType releaseType) {
         this.modId = modId;
@@ -39,7 +39,7 @@ public class CurseArtifact {
         return getPage()+"/download";
     }
 
-    private String getPage() {
+    public String getPage() {
         try {
             return "http://minecraft.curseforge.com/projects/"+URLEncoder.encode(modId,"UTF-8")+"/files/"+fileID;
         } catch (UnsupportedEncodingException e) {
@@ -47,7 +47,7 @@ public class CurseArtifact {
         }
     }
 
-    private List<SimpleCurseModInfo> getDependencies() {
+    public List<SimpleCurseModInfo> getDependencies() {
         try {
             Document doc = Jsoup.connect(getPage()).userAgent("Mozilla").get();
             return doc.select("h5:contains(Required Library)+ul .project-tag").stream().map(e -> CurseAPI.getSimpleMod("http://minecraft.curseforge.com"+e.select("a").get(0).attr("href"))).collect(Collectors.toList());
@@ -57,7 +57,7 @@ public class CurseArtifact {
         }
     }
 
-    private List<CurseArtifact> getRecommendedDependencyArtifacts() {
+    public List<CurseArtifact> getRecommendedDependencyArtifacts() {
         return getDependencies().stream().map(simpleCurseModInfo -> simpleCurseModInfo.getFiles().stream().filter(curseArtifact -> isCompatible(curseArtifact.getVersion())).collect(Collectors.toList()).get(0)).collect(Collectors.toList());
     }
     @Override
@@ -69,11 +69,19 @@ public class CurseArtifact {
         return modId;
     }
 
+    public ReleaseType getReleaseType() {
+        return releaseType;
+    }
+
     public String getName() {
         return name;
     }
 
-    private String getVersion() { return version; }
+    public String getFileID() {
+        return fileID;
+    }
+
+    public String getVersion() { return version; }
 
     public List<CurseArtifact> getAllDependencies() {
         List<CurseArtifact> dependencies = new ArrayList<>();

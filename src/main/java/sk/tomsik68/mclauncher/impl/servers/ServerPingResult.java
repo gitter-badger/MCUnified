@@ -3,7 +3,7 @@ package sk.tomsik68.mclauncher.impl.servers;
 public final class ServerPingResult {
     private boolean successful = false;
     private Throwable error = null;
-    private final PingedServerInfo info;
+    private PingedServerInfo info;
 
     ServerPingResult(PingedServerInfo info){
         this(info, null, true);

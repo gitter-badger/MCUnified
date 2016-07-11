@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * Created by liz on 6/22/16.
  */
-public class AccountCellRenderer implements ListCellRenderer<Object> {
+public class AccountCellRenderer implements ListCellRenderer {
     @Override
     public Component getListCellRendererComponent(JList jList, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = new JLabel();

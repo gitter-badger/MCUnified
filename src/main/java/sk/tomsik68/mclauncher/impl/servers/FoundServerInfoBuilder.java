@@ -12,10 +12,11 @@ final class FoundServerInfoBuilder {
     private String motd, ip, icon;
     private int port;
     private IServerFinder finder;
-    private final HashMap<String, Object> properties = new HashMap<>();
+    private HashMap<String, Object> properties = new HashMap<String, Object>();
 
-    public void ip(String s){
+    public FoundServerInfoBuilder ip(String s){
         ip = s;
+        return this;
     }
 
     public FoundServerInfoBuilder motd(String s){
@@ -23,8 +24,9 @@ final class FoundServerInfoBuilder {
         return this;
     }
 
-    public void finder(IServerFinder sf){
+    public FoundServerInfoBuilder finder(IServerFinder sf){
         finder = sf;
+        return this;
     }
 
     public FoundServerInfoBuilder port(int p){
@@ -42,8 +44,9 @@ final class FoundServerInfoBuilder {
         return this;
     }
 
-    public void property(Object value){
-        properties.put("recvString", value);
+    public FoundServerInfoBuilder property(String key, Object value){
+        properties.put(key, value);
+        return this;
     }
 
     public FoundServerInfo build(){

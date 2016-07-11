@@ -10,14 +10,13 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.util.Scanner;
 
 /**
  * Created by liz on 6/22/16.
  */
 public class MainFrame extends JFrame {
     public MainFrame() {
-        super("MCUnified - "+new Scanner(MainFrame.class.getResourceAsStream("/version.txt")).useDelimiter("\\Z").next());
+        super("MCUnified");
         try {
             setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
         } catch (IOException e) {
@@ -50,7 +49,7 @@ public class MainFrame extends JFrame {
         JMenuItem deleteInstance = new JMenuItem("Delete");
         deleteInstance.addActionListener(e -> {
             if(!Main.gui.instanceList.isSelectionEmpty()) {
-                UnifiedMCInstance mcinstance = Main.gui.instanceList.getSelectedValue();
+                UnifiedMCInstance mcinstance = (UnifiedMCInstance) Main.gui.instanceList.getSelectedValue();
                 Utils.recursiveDelete(mcinstance.getLocation());
                 ((DefaultListModel)Main.gui.instanceList.getModel()).removeElement(mcinstance);
             }

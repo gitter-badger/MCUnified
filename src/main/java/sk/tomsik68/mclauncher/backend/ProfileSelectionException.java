@@ -1,7 +1,7 @@
 package sk.tomsik68.mclauncher.backend;
 
 
-final class ProfileSelectionException extends Exception {
+public final class ProfileSelectionException extends Exception {
     ProfileSelectionException(String message){
         super(message);
     }

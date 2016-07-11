@@ -7,37 +7,39 @@ import java.util.List;
 /**
  * Describes current set of mods that will be injected into JAR file
  */
-@SuppressWarnings("SameReturnValue")
 public interface IModdingProfile {
     /**
      * Returns <code>separator</code>-separated list of absolute paths to JAR files that will be injected before libraries
+     * @param separator - String used to separate files
      * @return Null for none.
      */
-    File[] injectBeforeLibs();
+    public File[] injectBeforeLibs(String separator);
 
     /**
      * Returns <code>separator</code>-separated list of absolute paths to JAR files that will be injected after libraries
+     * @param separator - String used to separate files
      * @return Null for none.
      */
-    File[] injectAfterLibs();
+    public File[] injectAfterLibs(String separator);
 
     /**
      * Checks if this library should be loaded with our mods.
+     * @param libraryName - Name of library to test
      * @return True if specified library may be injected along with all vanilla libraries
      */
-    boolean isLibraryAllowed();
+    public boolean isLibraryAllowed(String libraryName);
 
     /**
      *
      * @return Custom game JAR file to use. If you don't want to change it, return null
      */
-    File getCustomGameJar();
+    public File getCustomGameJar();
 
     /**
      *
      * @return Name of main class to use while launching Minecraft.
      */
-    String getMainClass();
+    public String getMainClass();
 
     /**
      * Minecraft arguments are arguments that will be available in minecraft's main method.
@@ -45,11 +47,11 @@ public interface IModdingProfile {
      * @param minecraftArguments Array of minecraft arguments created by launcher
      * @return Array of string which is formatted in the same way as the input array. If you don't want to make any changes, return null or <code>minecraftArguments</code>
      */
-    String[] changeMinecraftArguments(String[] minecraftArguments);
+    public String[] changeMinecraftArguments(String[] minecraftArguments);
 
     /**
      *
      * @return List of parameters that will be appended after all parameters to launch the JAR. These most likely won't influence the launching process, but you may find it useful...
      */
-    List<String> getLastParameters();
+    public List<String> getLastParameters();
 }

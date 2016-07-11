@@ -6,17 +6,22 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import tk.freetobuild.mcunified.curse.CurseArtifact;
 import tk.freetobuild.mcunified.gui.dialogs.DialogDownloadMod;
+import tk.freetobuild.mcunified.gui.dialogs.DialogInstallForge;
 import tk.freetobuild.mcunified.gui.workers.ForgeInstallerWorker;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -27,17 +32,14 @@ public class Utils {
         if (!file.exists())
             return;
         if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if(files!=null)
-                for (File f : files) {
-                    recursiveDelete(f);
-                }
+            for (File f : file.listFiles()) {
+                recursiveDelete(f);
+            }
         }
-        if(!file.delete())
-            Main.logger.severe("Unable to delete file "+file.getPath());
+        file.delete();
     }
     public static int getFileSize(URL url) {
-        URLConnection conn;
+        URLConnection conn = null;
         try {
             conn = url.openConnection();
             conn.getInputStream();
@@ -47,13 +49,11 @@ public class Utils {
             return -1;
         }
     }
-    private static void extractEntry(File out, ZipFile zf, ZipEntry entry) throws IOException {
+    public static void extractEntry(File out, ZipFile zf, ZipEntry entry) throws IOException {
         if(entry.isDirectory()) {
-            if(!out.mkdirs())
-                Main.logger.severe("Unable to create directory "+out.getPath());
+            out.mkdirs();
         } else {
-            if(!out.getParentFile().mkdirs())
-                Main.logger.severe("Unable to create directory "+out.getParentFile().getPath());
+            out.getParentFile().mkdirs();
             Files.copy(zf.getInputStream(entry),out.toPath());
         }
     }
@@ -71,21 +71,19 @@ public class Utils {
         }
     }
     public static void zipDirectory(ZipOutputStream os, File dir, String prefix) throws IOException {
-        File[] files = dir.listFiles();
-        if(files!=null)
-            for(File f : files) {
-                if(f.isDirectory()) {
-                    ZipEntry entry = new ZipEntry(prefix+f.getName()+"/");
-                    os.putNextEntry(entry);
-                    os.closeEntry();
-                    zipDirectory(os,f,prefix+f.getName()+"/");
-                } else {
-                    ZipEntry entry = new ZipEntry(prefix+f.getName());
-                    os.putNextEntry(entry);
-                    Files.copy(f.toPath(),os);
-                    os.closeEntry();
-                }
+        for(File f : dir.listFiles()) {
+            if(f.isDirectory()) {
+                ZipEntry entry = new ZipEntry(prefix+f.getName()+"/");
+                os.putNextEntry(entry);
+                os.closeEntry();
+                zipDirectory(os,f,prefix+f.getName()+"/");
+            } else {
+                ZipEntry entry = new ZipEntry(prefix+f.getName());
+                os.putNextEntry(entry);
+                Files.copy(f.toPath(),os);
+                os.closeEntry();
             }
+        }
     }
     public static String getZipEntryName(ZipEntry entry) {
         return new File(entry.getName()).getName();
@@ -106,8 +104,7 @@ public class Utils {
     public static UnifiedMCInstance installModpack(String name, JSONObject modpack) {
         File dir = new File(Main.baseDir,"instances"+File.separator+name);
         if(!dir.exists())
-            if(!dir.mkdirs())
-                Main.logger.severe("Unable to create directory "+dir.getPath());
+            dir.mkdirs();
         UnifiedMCInstance result = new UnifiedMCInstance(name,modpack.get("mcversion").toString());
         if(modpack.containsKey("forge")) {
             ForgeVersionList.refreshList();

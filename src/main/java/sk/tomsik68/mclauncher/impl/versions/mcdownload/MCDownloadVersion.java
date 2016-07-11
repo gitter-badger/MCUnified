@@ -14,25 +14,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MCDownloadVersion implements IVersion, IJSONSerializable {
     private static final MCDownloadVersionInstaller installer = new MCDownloadVersionInstaller();
     private static final IVersionLauncher launcher = new MCDownloadVersionLauncher();
     private static final String DEFAULT_ASSETS_INDEX = "legacy";
 
-    private final String id;
-    private final String time;
-    private final String releaseTime;
-    private final String type;
-    private String minecraftArgs;
-    private String mainClass;
-    private String jarVersion;
-    private final int minimumLauncherVersion;
-    private final JSONObject json;
+    private String id, time, releaseTime, type, minecraftArgs, mainClass, jarVersion;
+    private int minimumLauncherVersion;
+    private JSONObject json;
     private String incompatibilityReason, processArgs, assets, inheritsFrom;
-    private final ArrayList<Rule> rules = new ArrayList<>();
-    private final ArrayList<Library> libraries = new ArrayList<>();
+    private ArrayList<Rule> rules = new ArrayList<Rule>();
+    private ArrayList<Library> libraries = new ArrayList<Library>();
 
     private boolean needsInheritance;
 
@@ -65,7 +58,9 @@ public class MCDownloadVersion implements IVersion, IJSONSerializable {
         }
         if (json.containsKey("libraries")) {
             JSONArray libs = (JSONArray) json.get("libraries");
-            libraries.addAll(libs.stream().map(lib -> new Library((JSONObject) lib)).collect(Collectors.toList()));
+            for (int i = 0; i < libs.size(); ++i) {
+                libraries.add(new Library((JSONObject) libs.get(i)));
+            }
         }
         if (json.containsKey("incompatibilityReason"))
             incompatibilityReason = json.get("incompatibilityReason").toString();
@@ -123,7 +118,7 @@ public class MCDownloadVersion implements IVersion, IJSONSerializable {
         return time;
     }
 
-    private String getReleaseTime() {
+    String getReleaseTime() {
         return releaseTime;
     }
 

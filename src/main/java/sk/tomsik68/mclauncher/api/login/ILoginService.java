@@ -13,12 +13,12 @@ public interface ILoginService extends IOnlineService {
      * @return {@link ISession} object if successful
      * @throws Exception - Connection failed, or LoginException if login failed
      */
-    ISession login(IProfile profile) throws Exception;
+    public ISession login(IProfile profile) throws Exception;
 
     /**
      * If it's possible, invalidates the specified session
      * @param session Session to invalidate
      * @throws Exception - Connection failed
      */
-    void logout(ISession session) throws Exception;
+    public void logout(ISession session) throws Exception;
 }

@@ -8,7 +8,6 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import org.tukaani.xz.XZInputStream;
-import tk.freetobuild.mcunified.Main;
 
 import java.io.*;
 import java.net.URL;
@@ -23,12 +22,13 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Pack200;
 
-class DownloadUtils {
-    private static final String LIBRARIES_URL = "https://libraries.minecraft.net/";
+public class DownloadUtils {
+    public static final String LIBRARIES_URL = "https://libraries.minecraft.net/";
+    public static final String VERSION_URL_CLIENT = "https://s3.amazonaws.com/Minecraft.Download/versions/{MCVER}/{MCVER}.jar";
 
     private static final String PACK_NAME = ".pack.xz";
 
-    static int downloadInstalledLibraries(File librariesDir, IMonitor monitor, List<JsonNode> libraries, int progress, List<Artifact> grabbed, List<Artifact> bad, MirrorData mirrors)
+    public static int downloadInstalledLibraries(String jsonMarker, File librariesDir, IMonitor monitor, List<JsonNode> libraries, int progress, List<Artifact> grabbed, List<Artifact> bad,MirrorData mirrors)
     {
         for (JsonNode library : libraries)
         {
@@ -38,7 +38,7 @@ class DownloadUtils {
             {
                 checksums = Lists.newArrayList(Lists.transform(library.getArrayNode("checksums"), JsonNode::getText));
             }
-            if (library.isBooleanValue("clientreq") && library.getBooleanValue("clientreq"))
+            if (library.isBooleanValue(jsonMarker) && library.getBooleanValue(jsonMarker))
             {
                 monitor.setNote(String.format("Considering library %s", artifact.getDescriptor()));
                 File libPath = artifact.getLocalPath(librariesDir);
@@ -56,8 +56,7 @@ class DownloadUtils {
                     continue;
                 }
 
-                if(!libPath.getParentFile().mkdirs())
-                    Main.logger.severe("Unable to create directory" + libPath.getParentFile().getPath());
+                libPath.getParentFile().mkdirs();
                 monitor.setNote(String.format("Downloading library %s", artifact.getDescriptor()));
                 libURL += artifact.getPath();
 
@@ -70,7 +69,7 @@ class DownloadUtils {
                     }
                     if (!downloadFile(libPath, libURL, checksums))
                     {
-                        if (!libURL.startsWith(LIBRARIES_URL))
+                        if (!libURL.startsWith(LIBRARIES_URL) || !jsonMarker.equals("clientreq"))
                         {
                             bad.add(artifact);
                         }
@@ -91,8 +90,7 @@ class DownloadUtils {
                         monitor.setNote(String.format("Unpacking packed file %s", packFile.getName()));
                         unpackLibrary(libPath, Files.toByteArray(packFile));
                         monitor.setNote(String.format("Successfully unpacked packed file %s",packFile.getName()));
-                        if(!packFile.delete())
-                            Main.logger.severe("Unable to delete "+packFile.getPath());
+                        packFile.delete();
 
                         if (checksumValid(libPath, checksums))
                         {
@@ -107,7 +105,7 @@ class DownloadUtils {
                     {
                         oom.printStackTrace();
                         bad.add(artifact);
-                        artifact.setMemo();
+                        artifact.setMemo("Out of Memory: Try restarting installer with JVM Argument: -Xmx1G");
                     }
                     catch (Exception e)
                     {
@@ -144,11 +142,64 @@ class DownloadUtils {
         }
     }
 
-    private static void unpackLibrary(File output, byte[] data) throws IOException
+    public static boolean downloadFileEtag(File libPath, String libURL)
+    {
+        try
+        {
+            URL url = new URL(libURL);
+            URLConnection connection = url.openConnection();
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            String etag = connection.getHeaderField("ETag");
+            if (etag == null)
+            {
+              etag = "-";
+            }
+            else if ((etag.startsWith("\"")) && (etag.endsWith("\"")))
+            {
+                etag = etag.substring(1, etag.length() - 1);
+            }
+
+            InputSupplier<InputStream> urlSupplier = new URLISSupplier(connection);
+            Files.copy(urlSupplier, libPath);
+
+            if (etag.indexOf('-') != -1) return true; //No-etag, assume valid
+            try
+            {
+                byte[] fileData = Files.toByteArray(libPath);
+                String md5 = Hashing.md5().hashBytes(fileData).toString();
+                System.out.println("  ETag: " + etag);
+                System.out.println("  MD5:  " + md5);
+                return etag.equalsIgnoreCase(md5);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        catch (FileNotFoundException fnf)
+        {
+            if (!libURL.endsWith(PACK_NAME))
+            {
+                fnf.printStackTrace();
+            }
+            return false;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void unpackLibrary(File output, byte[] data) throws IOException
     {
         if (output.exists())
-            if (!output.delete())
-                Main.logger.severe("Unable to delete " + output.getPath());
+        {
+            output.delete();
+        }
 
         byte[] decompressed = DownloadUtils.readFully(new XZInputStream(new ByteArrayInputStream(data)));
 
@@ -198,11 +249,10 @@ class DownloadUtils {
 
         jos.close();
         jarBytes.close();
-        if(!temp.delete())
-            Main.logger.severe("Unable to delete "+temp.getPath());
+        temp.delete();
     }
 
-    private static boolean validateJar(File libPath, byte[] data, List<String> checksums) throws IOException
+    public static boolean validateJar(File libPath, byte[] data, List<String> checksums) throws IOException
     {
         System.out.println("Checking \"" + libPath.getAbsolutePath() + "\" internal checksums");
 
@@ -272,7 +322,7 @@ class DownloadUtils {
         }
     }
 
-    static List<String> downloadList(String libURL)
+    public static List<String> downloadList(String libURL)
     {
         try
         {
@@ -290,8 +340,7 @@ class DownloadUtils {
 
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private static boolean downloadFile(File libPath, String libURL, List<String> checksums)
+    public static boolean downloadFile(File libPath, String libURL, List<String> checksums)
     {
         try
         {
@@ -306,7 +355,9 @@ class DownloadUtils {
         catch (FileNotFoundException fnf)
         {
             if (!libURL.endsWith(PACK_NAME))
+            {
                 fnf.printStackTrace();
+            }
             return false;
         }
         catch (Exception e)
@@ -316,7 +367,7 @@ class DownloadUtils {
         }
     }
 
-    private static byte[] readFully(InputStream stream) throws IOException
+    public static byte[] readFully(InputStream stream) throws IOException
     {
         byte[] data = new byte[4096];
         ByteArrayOutputStream entryBuffer = new ByteArrayOutputStream();
@@ -333,7 +384,7 @@ class DownloadUtils {
         return entryBuffer.toByteArray();
     }
 
-    private static class URLISSupplier implements InputSupplier<InputStream>
+    static class URLISSupplier implements InputSupplier<InputStream>
     {
         private final URLConnection connection;
 

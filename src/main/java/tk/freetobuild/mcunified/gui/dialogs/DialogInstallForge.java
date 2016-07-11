@@ -19,7 +19,7 @@ public class DialogInstallForge extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JList<ForgeArtifact> list1;
+    public JList list1;
     private ForgeArtifact artifact = null;
 
     public DialogInstallForge(UnifiedMCInstance instance) {
@@ -37,15 +37,15 @@ public class DialogInstallForge extends JDialog {
         ForgeVersionList.getArtifacts(instance.version).stream().collect(Collectors.toCollection(LinkedList::new)).descendingIterator().forEachRemaining(model::addElement);
         list1.setModel(model);
         list1.addListSelectionListener(e -> buttonOK.setEnabled(!list1.isSelectionEmpty()));
-        buttonOK.addActionListener((e2) -> onOK());
-        buttonCancel.addActionListener((e1) -> onCancel());
+        buttonOK.addActionListener(this::onOK);
+        buttonCancel.addActionListener(this::onCancel);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                onCancel();
+                onCancel(null);
             }
         });
-        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(null), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         pack();
     }
 
@@ -53,12 +53,12 @@ public class DialogInstallForge extends JDialog {
         return artifact;
     }
 
-    private void onOK() {
-        artifact = list1.getSelectedValue();
+    private void onOK(ActionEvent e) {
+        artifact = (ForgeArtifact) list1.getSelectedValue();
         dispose();
     }
 
-    private void onCancel() {
+    private void onCancel(ActionEvent e) {
         dispose();
     }
 

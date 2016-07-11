@@ -1,11 +1,14 @@
 package sk.tomsik68.mclauncher.impl.login.legacy;
 
 import sk.tomsik68.mclauncher.api.login.IProfile;
+import sk.tomsik68.mclauncher.api.login.ISession;
 
 public final class LegacyProfile implements IProfile {
 
-    private final String pass;
-    private final String name;
+    private String pass;
+    private String name;
+
+    private final String SKINS_ROOT = "http://skins.minecraft.net/MinecraftSkins/";
 
     public LegacyProfile(String username, String password) {
         name = username;
@@ -28,7 +31,6 @@ public final class LegacyProfile implements IProfile {
 
     @Override
     public String getSkinURL() {
-        String SKINS_ROOT = "http://skins.minecraft.net/MinecraftSkins/";
         StringBuilder url = new StringBuilder(SKINS_ROOT);
         url = url.append(getName());
         url = url.append(".png");

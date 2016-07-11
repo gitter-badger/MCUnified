@@ -39,13 +39,14 @@ public final class HttpUtils {
 
     /**
      * Execute a secured POST request
+     * @param url URL to request
      * @param keyInput the secret key to be used
      * @param parameters Parameters in form <code>name=Tom&amp;password=pass123</code>. They needn't to be URL-encoded(it will be done automatically)
      * @return The result of request
      * @throws Exception I/O Exception, HTTP errors or invalid key
      */
-    public static String securePostWithKey(InputStream keyInput, String parameters) throws Exception {
-        URL u = new URL(sk.tomsik68.mclauncher.impl.login.legacy.LegacyLoginService.LOGIN_URL);
+    public static String securePostWithKey(String url, InputStream keyInput, String parameters) throws Exception {
+        URL u = new URL(url);
         HttpsURLConnection connection = (HttpsURLConnection) u.openConnection();
         connection.setRequestMethod("POST");
 
@@ -61,8 +62,8 @@ public final class HttpUtils {
         Certificate cert = connection.getServerCertificates()[0];
         byte[] serverKey = cert.getPublicKey().getEncoded();
         DataInputStream dis = new DataInputStream(keyInput);
-        for (byte aServerKey : serverKey) {
-            if (dis.readByte() != aServerKey) {
+        for (int i = 0; i < serverKey.length; ++i) {
+            if (dis.readByte() != serverKey[i]) {
                 throw new SecurityException("Invalid Server Key!");
             }
         }

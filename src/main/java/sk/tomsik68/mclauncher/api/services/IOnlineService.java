@@ -10,5 +10,5 @@ public interface IOnlineService {
      * @param availability - Availability object retrieved from central server
      * @return True if this service is available. The result is to be determined using availability specified
      */
-    boolean isAvailable(IServicesAvailability availability);
+    public boolean isAvailable(IServicesAvailability availability);
 }

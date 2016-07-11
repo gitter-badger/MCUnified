@@ -7,7 +7,6 @@ import tk.freetobuild.mcunified.Main;
 import tk.freetobuild.mcunified.UnifiedMCInstance;
 import tk.freetobuild.mcunified.Utils;
 import tk.freetobuild.mcunified.curse.CurseArtifact;
-import tk.freetobuild.mcunified.curse.ForgeMod;
 import tk.freetobuild.mcunified.gui.workers.ProgressMonitorListener;
 import tk.freetobuild.mcunified.gui.workers.ProgressMonitorWorker;
 
@@ -20,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -110,7 +110,17 @@ public class DialogDownloadMod extends JDialog {
             worker.cancel(false);
     }
 
-    private void doDownloads(UnifiedMCInstance instance, List<CurseArtifact> artifacts) {
+    private List<CurseArtifact> getArtifacts(UnifiedMCInstance instance, CurseArtifact artifact) {
+        List<CurseArtifact> urls = new ArrayList<>();
+        urls.add(artifact);
+        urls.addAll(artifact.getAllDependencies());
+        File outDir = new File(instance.getLocation(), "mods");
+        if (!outDir.exists())
+            outDir.mkdirs();
+        return urls;
+    }
+
+    public void doDownloads(UnifiedMCInstance instance, List<CurseArtifact> artifacts) {
         long totalSize = artifacts.stream().mapToLong(a -> {
             try {
                 return Utils.getFileSize(new URL(a.getDownload()));
@@ -165,7 +175,7 @@ public class DialogDownloadMod extends JDialog {
             buttonCancel.setText("Close");
             progressBar1.setVisible(false);
             logger.removeHandler(handler);
-            Main.gui.loadLoaderMods((DefaultListModel<ForgeMod>) Main.gui.loaderModList.getModel(), instance);
+            Main.gui.loadLoaderMods((DefaultListModel) Main.gui.loaderModList.getModel(), instance);
             finished = true;
             if (worker.isCancelled())
                 DialogDownloadMod.this.dispose();

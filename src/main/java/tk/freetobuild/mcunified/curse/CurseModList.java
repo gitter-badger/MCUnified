@@ -39,18 +39,18 @@ public class CurseModList implements Iterator<List<CurseModInfo>> {
         return new CurseModInfo(id, e.select("td .results-name a").get(0).text(), e.select(".results-owner a").text(), e.select("td .results-summary").get(0).text(),icon);
     };
     //endregion resultModConsumer
-    private final String baseSelector;
-    private final Function<? super Element, ? extends CurseModInfo> func;
+    private String baseSelector;
+    private Function<? super Element, ? extends CurseModInfo> func;
     private int currentPage = 0;
     private boolean hasNext = true;
-    private final String baseURL;
+    private String baseURL;
     private List<CurseModInfo> nextList;
     private CurseModList(String baseURL, String baseSelector, Function<? super Element, ? extends CurseModInfo> func) {
         this.baseSelector = baseSelector;
         this.func = func;
         this.baseURL = baseURL;
     }
-    public static CurseModList loadTopMods() {
+    public static CurseModList loadTopMods() throws IOException {
         return new CurseModList("http://minecraft.curseforge.com/mc-mods?page=",".project-list-item",topModConsumer);
     }
     public static CurseModList search(String mod) {

@@ -1,6 +1,7 @@
 package sk.tomsik68.mclauncher.impl.versions.mcdownload;
 
 import net.minidev.json.JSONObject;
+import sk.tomsik68.mclauncher.api.common.MCLauncherAPI;
 
 /**
  * Represents a single Asset. It may be a sound file, texture, language file etc.

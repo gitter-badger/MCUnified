@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
  * Created by liz on 6/27/16.
  */
 public class UnifiedMCInstance extends MinecraftInstance {
-    public final String version;
+    public String version;
     private MCDownloadVersion mcversion;
-    private final String name;
-    private final JSONArray patches = new JSONArray();
+    private String name;
+    private JSONArray patches = new JSONArray();
     public JSONArray mods = new JSONArray();
     private int minMemory = 512;
     private int maxMemory = 1024;
@@ -88,26 +88,26 @@ public class UnifiedMCInstance extends MinecraftInstance {
         writer.flush();
         writer.close();
     }
-    public void launch(String profile) {
+    public void launch(String profile) throws Exception {
         launch(profile,(ServerInfo) null, null);
     }
-    public void launch(String profile, String server) {
+    public void launch(String profile, String server) throws Exception {
         String[] splitIP = server.split(":");
         launch(profile,new ServerInfo(splitIP[0],"Server","",Integer.valueOf(splitIP[1])), null);
     }
-    public void launch(String profile, ServerInfo server) {
+    public void launch(String profile, ServerInfo server) throws Exception {
         launch(profile,server,null);
 
     }
 
-    public void launch(String profile, JProgressBar status) {
+    public void launch(String profile, JProgressBar status) throws Exception {
         launch(profile,(ServerInfo) null, status);
     }
-    public void launch(String profile, String server, JProgressBar status) {
+    public void launch(String profile, String server, JProgressBar status) throws Exception {
         String[] splitIP = server.split(":");
         launch(profile,new ServerInfo(splitIP[0],"Server","",Integer.valueOf(splitIP[1])), status);
     }
-    private void launch(String profile, ServerInfo server, JProgressBar status) {
+    public void launch(String profile, ServerInfo server, JProgressBar status) throws Exception {
         ProgressMonitorWorker worker = new ProgressMonitorWorker(monitor -> {
             try {
                 Main.backend.updateMinecraft(version, monitor);

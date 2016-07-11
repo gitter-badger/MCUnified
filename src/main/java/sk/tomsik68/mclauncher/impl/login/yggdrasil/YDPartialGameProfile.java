@@ -7,14 +7,14 @@ final class YDPartialGameProfile implements IJSONSerializable {
     private final String name, id;
     private final boolean legacy;
 
-    public YDPartialGameProfile(String name, String id) {
+    public YDPartialGameProfile(String name, String id, boolean isLegacy) {
         this.name = name;
         this.id = id;
-        this.legacy = false;
+        this.legacy = isLegacy;
     }
 
     public YDPartialGameProfile(JSONObject jsonObj) {
-        this(jsonObj.get("name").toString(), jsonObj.get("id").toString());
+        this(jsonObj.get("name").toString(), jsonObj.get("id").toString(), false);
 
     }
 

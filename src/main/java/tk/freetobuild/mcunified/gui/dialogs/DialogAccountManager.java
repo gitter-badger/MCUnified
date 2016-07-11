@@ -3,7 +3,6 @@ package tk.freetobuild.mcunified.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import tk.freetobuild.mcunified.Main;
 import tk.freetobuild.mcunified.gui.cellrenderers.AccountCellRenderer;
 import sk.tomsik68.mclauncher.api.login.IProfile;
 import sk.tomsik68.mclauncher.impl.common.Platform;
@@ -22,9 +21,10 @@ import java.io.IOException;
 public class DialogAccountManager extends JDialog {
     private JPanel contentPane;
     private JButton buttonCancel;
-    private JList<Object> list1;
-    private JLabel buttonAddAccount;
-    private JLabel buttonRemoveAccount;
+    public JList list1;
+    public JLabel buttonAddAccount;
+    public JLabel buttonRemoveAccount;
+    YDProfileIO profiles;
 
     public DialogAccountManager() {
         try {
@@ -39,7 +39,7 @@ public class DialogAccountManager extends JDialog {
         list1.setCellRenderer(new AccountCellRenderer());
         setupButton(buttonAddAccount, this::onAdd);
         setupButton(buttonRemoveAccount, this::onDelete);
-        DefaultListModel<Object> model = new DefaultListModel<>();
+        DefaultListModel model = new DefaultListModel();
         list1.setModel(model);
         loadProfiles();
         buttonCancel.addActionListener(e -> onCancel());
@@ -62,7 +62,7 @@ public class DialogAccountManager extends JDialog {
             if (new File(Platform.getCurrentPlatform().getWorkingDirectory(), "launcher_profiles.json").exists()) {
                 IProfile[] profiles = new YDProfileIO(Platform.getCurrentPlatform().getWorkingDirectory()).read();
                 for (IProfile profile : profiles) {
-                    ((DefaultListModel<Object>) list1.getModel()).addElement(profile);
+                    ((DefaultListModel) list1.getModel()).addElement(profile);
                 }
             }
         } catch (Exception e) {
@@ -70,13 +70,13 @@ public class DialogAccountManager extends JDialog {
         }
     }
 
-    private void onAdd() {
+    public void onAdd() {
         new DialogNewAccount().setVisible(true);
         ((DefaultListModel) list1.getModel()).clear();
         loadProfiles();
     }
 
-    private void onDelete() {
+    public void onDelete() {
         if (!list1.isSelectionEmpty()) {
             ((DefaultListModel) list1.getModel()).remove(list1.getSelectedIndex());
             save();
@@ -87,14 +87,13 @@ public class DialogAccountManager extends JDialog {
         YDAuthProfile[] profiles = new YDAuthProfile[list1.getModel().getSize()];
         File profilesFile = new File(Platform.getCurrentPlatform().getWorkingDirectory(), "launcher_profiles.json");
         if (profilesFile.exists())
-            if (!profilesFile.delete())
-                Main.logger.severe("Unable to delete file " + profilesFile.getPath());
+            profilesFile.delete();
         if (profiles.length > 0) {
             for (int i = 0; i < profiles.length; i++) {
                 profiles[i] = (YDAuthProfile) list1.getModel().getElementAt(i);
             }
             try {
-                new YDProfileIO(Platform.getCurrentPlatform().getWorkingDirectory()).write(profiles);
+                this.profiles.write(profiles);
             } catch (Exception e) {
                 e.printStackTrace();
             }

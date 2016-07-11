@@ -8,7 +8,7 @@ import net.minidev.json.JSONObject;
 class YDResponse {
     private String error, message;
 
-    YDResponse(JSONObject json) {
+    public YDResponse(JSONObject json) {
         if (json.containsKey("error"))
             setError(json.get("error").toString());
         if (json.containsKey("errorMessage"))
@@ -19,7 +19,7 @@ class YDResponse {
         return error;
     }
 
-    private void setError(String error) {
+    final void setError(String error) {
         this.error = error;
     }
 
@@ -27,7 +27,7 @@ class YDResponse {
         return message;
     }
 
-    private void setMessage(String message) {
+    final void setMessage(String message) {
         this.message = message;
     }
 }

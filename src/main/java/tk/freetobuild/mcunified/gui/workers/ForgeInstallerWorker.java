@@ -14,8 +14,8 @@ import java.util.function.Consumer;
  * Created by liz on 6/30/16.
  */
 public class ForgeInstallerWorker extends SwingWorker<JSONObject,Void> {
-    private final ForgeArtifact artifact;
-    private final Consumer<JSONObject> finished;
+    private ForgeArtifact artifact;
+    private Consumer<JSONObject> finished;
     public ForgeInstallerWorker(ForgeArtifact artifact, Consumer<JSONObject> finished) {
         this.artifact = artifact;
         this.finished = finished;

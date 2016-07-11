@@ -6,9 +6,9 @@ import java.io.File;
  * Created by liz on 7/10/16.
  */
 public class ConfigCheckBoxNode extends CheckBoxNode {
-    private final File f;
-    private final String path;
-    private final String prefix;
+    private File f;
+    private String path;
+    private String prefix;
     public ConfigCheckBoxNode(File f, String prefix, boolean selected) {
         super(f.getName(), selected);
         this.f = f;

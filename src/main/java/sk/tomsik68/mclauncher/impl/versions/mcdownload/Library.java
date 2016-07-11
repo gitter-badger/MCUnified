@@ -3,6 +3,7 @@ package sk.tomsik68.mclauncher.impl.versions.mcdownload;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import sk.tomsik68.mclauncher.api.common.IOperatingSystem;
+import sk.tomsik68.mclauncher.api.common.MCLauncherAPI;
 import sk.tomsik68.mclauncher.impl.common.Platform;
 import sk.tomsik68.mclauncher.impl.versions.mcdownload.Rule.Action;
 import sk.tomsik68.mclauncher.util.IExtractRules;
@@ -10,33 +11,36 @@ import sk.tomsik68.mclauncher.util.StringSubstitutor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 /**
  * Represents a library that is needed to run minecraft.
  */
-class Library {
-    private final StringSubstitutor libraryPathSubstitutor = new StringSubstitutor();
+public class Library {
+    private final StringSubstitutor libraryPathSubstitutor = new StringSubstitutor("${%s}");
     private final String name;
-    private final HashMap<String, String> natives = new HashMap<>();
-    private final ArrayList<Rule> rules = new ArrayList<>();
+    private final HashMap<String, String> natives = new HashMap<String, String>();
+    private final ArrayList<Rule> rules = new ArrayList<Rule>();
     private LibraryExtractRules extractRules;
     private final static String LIBRARY_BASE_URL = "https://libraries.minecraft.net/";
     private String url = LIBRARY_BASE_URL;
-
-    Library(JSONObject json) {
+    private boolean clientReq;
+    public Library(JSONObject json) {
+        clientReq = (boolean)json.getOrDefault("clientreq",false);
         name = json.get("name").toString();
         if (json.containsKey("natives")) {
             JSONObject nativesObj = (JSONObject) json.get("natives");
             for (String nativeKey : nativesObj.keySet()) {
+                String key = nativeKey;
                 String value = nativesObj.get(nativeKey).toString();
 
-                natives.put(nativeKey, value);
+                natives.put(key, value);
             }
         }
         if (json.containsKey("rules")) {
             JSONArray rulz = (JSONArray) json.get("rules");
-            rules.addAll(rulz.stream().map(aRulz -> new Rule((JSONObject) aRulz)).collect(Collectors.toList()));
+            for (int i = 0; i < rulz.size(); ++i) {
+                rules.add(new Rule((JSONObject) rulz.get(i)));
+            }
         }
         if (json.containsKey("extract")) {
             extractRules = new LibraryExtractRules((JSONObject) json.get("extract"));
@@ -48,6 +52,17 @@ class Library {
 
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns name of library that holds natives for given operating system
+     * @param os - IOperatingSystem to check
+     * @return Name of library which holds natives for given OS
+     */
+    public String getNatives(IOperatingSystem os) {
+        if (!natives.containsKey(os.getMinecraftName()))
+            return natives.get(Platform.wrapName(os.getMinecraftName())).replace("${arch}", System.getProperty("sun.arch.data.model"));
+        return natives.get(os.getMinecraftName()).replace("${arch}", os.getArchitecture());
     }
 
     /**
@@ -98,7 +113,7 @@ class Library {
      *
      * @return True if there are natives for any platform
      */
-    boolean hasNatives() {
+    public boolean hasNatives() {
         return !natives.isEmpty();
     }
 
@@ -106,7 +121,7 @@ class Library {
      *
      * @return IExtractRules that apply to this library
      */
-    IExtractRules getExtractRules() {
+    public IExtractRules getExtractRules() {
         return extractRules;
     }
 
@@ -114,8 +129,11 @@ class Library {
      *
      * @return String which contains URL where this library can be downloaded
      */
-    String getDownloadURL() {
+    public String getDownloadURL() {
         return url.concat(getPath());
     }
 
+    public boolean isClientReq() {
+        return clientReq;
+    }
 }

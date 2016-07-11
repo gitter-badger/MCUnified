@@ -4,9 +4,9 @@ package tk.freetobuild.mcunified.gui.components;
  * Created by liz on 7/10/16.
  */
 public class CheckBoxNode {
-    private String text;
+    String text;
 
-    private boolean selected;
+    boolean selected;
 
     public CheckBoxNode(String text, boolean selected) {
         this.text = text;
@@ -17,8 +17,16 @@ public class CheckBoxNode {
         return selected;
     }
 
+    public void setSelected(boolean newValue) {
+        selected = newValue;
+    }
+
     public String getText() {
         return text;
+    }
+
+    public void setText(String newValue) {
+        text = newValue;
     }
 
     public String toString() {

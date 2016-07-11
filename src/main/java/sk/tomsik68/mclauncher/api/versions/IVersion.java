@@ -9,36 +9,36 @@ public interface IVersion extends Comparable<IVersion> {
     /**
      * @return Human-readable name of this version
      */
-    String getDisplayName();
+    public String getDisplayName();
 
     /**
      * @return ID of this version, like 1.7.5
      */
-    String getId();
+    public String getId();
 
     /**
      * @return Unique ID of this version, like s1.7.5 or r1.7.5
      */
-    String getUniqueID();
+    public String getUniqueID();
 
     /**
      * @return Installer that can install this version
      */
-    IVersionInstaller getInstaller();
+    public IVersionInstaller getInstaller();
 
     /**
      * @return Launcher that can run this version
      */
-    IVersionLauncher getLauncher();
+    public IVersionLauncher getLauncher();
 
     /**
      * @return True if this version is compatible with current runtime.
      */
-    boolean isCompatible();
+    public boolean isCompatible();
 
     /**
      * @return Reason why it isn't compatible with specified runtime
      */
-    String getIncompatibilityReason();
+    public String getIncompatibilityReason();
 
 }

@@ -10,15 +10,15 @@ import sk.tomsik68.mclauncher.api.versions.IVersionInstaller;
 import sk.tomsik68.mclauncher.impl.common.Platform;
 import sk.tomsik68.mclauncher.util.ExtractUtils;
 import sk.tomsik68.mclauncher.util.FileUtils;
-import tk.freetobuild.mcunified.Main;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 final class MCDownloadVersionInstaller implements IVersionInstaller {
-    private final ArrayList<IVersionInstallListener> listeners = new ArrayList<>();
+    private final ArrayList<IVersionInstallListener> listeners = new ArrayList<IVersionInstallListener>();
     private static final String JAR_DOWNLOAD_URL = "https://s3.amazonaws.com/Minecraft.Download/versions/<VERSION>/<VERSION>.jar";
 
     public MCDownloadVersionInstaller(){
@@ -66,7 +66,7 @@ final class MCDownloadVersionInstaller implements IVersionInstaller {
 
         log.fine("Version compatible");
         List<Library> toInstall = version.getLibraries();
-        List<Library> toExtract = new ArrayList<>();
+        List<Library> toExtract = new ArrayList<Library>();
         log.fine("Fetching libraries...");
         if(haveProgress)
             progress.setStatus("Fetching Libraries...");
@@ -103,9 +103,8 @@ final class MCDownloadVersionInstaller implements IVersionInstaller {
         // purge old natives if they are present
         if (nativesDir.exists()) {
             File[] contains = nativesDir.listFiles();
-            for (File f : contains != null ? contains : new File[0]) {
-                if(!f.delete())
-                    Main.logger.severe("Unable to delete file "+f.getPath());
+            for (File f : contains) {
+                f.delete();
             }
         }
         log.fine("Extracting libraries...");

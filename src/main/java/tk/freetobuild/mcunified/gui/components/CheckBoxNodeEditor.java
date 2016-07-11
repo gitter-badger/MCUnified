@@ -17,9 +17,11 @@ import java.util.EventObject;
  */
 public class CheckBoxNodeEditor extends AbstractCellEditor implements TreeCellEditor {
 
-    private final CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
+    CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
 
-    private final JTree tree;
+    ChangeEvent changeEvent = null;
+
+    JTree tree;
 
     public CheckBoxNodeEditor(JTree tree) {
         this.tree = tree;

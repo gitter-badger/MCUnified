@@ -12,15 +12,15 @@ public interface IServerFinder extends IObservable<FoundServerInfo>, Runnable {
     /**
      * @return True if this finder is active
      */
-    boolean isActive();
+    public boolean isActive();
 
     /**
      * Starts this finder
      */
-    void startFinding();
+    public void startFinding();
 
     /**
      * Stops this finder
      */
-    void stop();
+    public void stop();
 }

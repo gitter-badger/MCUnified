@@ -1,11 +1,14 @@
 package sk.tomsik68.mclauncher.impl.versions.mcdownload;
 
+import sk.tomsik68.mclauncher.api.common.IObservable;
 import sk.tomsik68.mclauncher.api.common.IObserver;
+import sk.tomsik68.mclauncher.api.common.MCLauncherAPI;
 import sk.tomsik68.mclauncher.api.common.mc.MinecraftInstance;
 import sk.tomsik68.mclauncher.api.versions.IVersion;
 import sk.tomsik68.mclauncher.api.versions.IVersionList;
 import sk.tomsik68.mclauncher.api.versions.LatestVersionInformation;
 import sk.tomsik68.mclauncher.impl.common.Observable;
+import sk.tomsik68.mclauncher.impl.common.Platform;
 
 /**
  * Unified version list for {@link MCDownloadVersion}s. Contains local versions as well as remote.
@@ -50,7 +53,7 @@ public final class MCDownloadVersionList extends Observable<String> implements I
         return onlineVersionList.getLatestVersionInformation();
     }
 
-    private void resolveInheritance(MCDownloadVersion version) throws Exception {
+    void resolveInheritance(MCDownloadVersion version) throws Exception {
         // version's parent needs to be resolved first
         if (version.getInheritsFrom() != null) {
             MCDownloadVersion parent = (MCDownloadVersion) retrieveVersionInfo(version.getInheritsFrom());
@@ -60,7 +63,7 @@ public final class MCDownloadVersionList extends Observable<String> implements I
     }
 
     @Override
-    public void onUpdate(String changed) {
+    public void onUpdate(IObservable<String> observable, String changed) {
         notifyObservers(changed);
     }
 }

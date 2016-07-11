@@ -29,11 +29,12 @@ final class LibraryProvider {
      * @param library The library we want to check
      * @return True if the specified library is installed, otherwise false
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isInstalled(Library library){
         System.out.println("Checking "+library.getName());
         return getLibraryFile(library).exists();
     }
+
+    File getLibraryFolder(){ return libraryFolder; }
 
 
 }

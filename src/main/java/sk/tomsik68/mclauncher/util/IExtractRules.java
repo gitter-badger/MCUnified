@@ -11,5 +11,5 @@ public interface IExtractRules {
      * @param entry ZipEntry that is being decided about
      * @return True if this entry should be extracted, false otherwise
      */
-    boolean accepts(ZipEntry entry);
+    public boolean accepts(ZipEntry entry);
 }
