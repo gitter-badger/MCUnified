@@ -14,7 +14,7 @@
       success: function(data) {
         var latest = $("#dev-release")
         latest.attr("href",data[0].html_url);
-        latest.text(data[0].tag_name)
+        latest.text(data[0].name)
       },
       error: function() {
         $("#dev-release").text("Nothing Yet");
