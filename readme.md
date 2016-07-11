@@ -10,6 +10,10 @@
 - [X] World Management
 - [X] One-Click mod installing
 - [X] Mod pack importing/exporting
+- [ ] Import modpacks from FeedTheBeast
+- [ ] Import modpacks from Technic
+- [ ] Import modpacks from ATLauncher
+- [ ] Import modpacks from Curse
 
 ## One-Click mod installing
 MCUnified is able to install mods simply with a click of a button by using curseforge.com. It connects to curseforge to retrieve a list of mods which is then parsed from html to java objects which then can be used to download mods and create modpacks.
