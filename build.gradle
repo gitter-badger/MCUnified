@@ -1,10 +1,12 @@
 group 'tk.freetobuild'
-version '0.1-Dev'
+version '0.0.1'
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'application'
+//noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.8
+//noinspection GroovyUnusedAssignment
 mainClassName = "tk.freetobuild.mcunified.Main"
 repositories {
     mavenCentral()
@@ -24,6 +26,7 @@ dependencies {
     compile 'net.sourceforge.argo:argo:3.7'
     compile 'com.flowpowered:flow-nbt:1.0.0'
 }
+//noinspection GroovyAssignabilityCheck
 jar {
     from configurations.compile.collect { zipTree it }
     manifest.attributes 'Main-Class': 'tk.freetobuild.mcunified.Main'

@@ -11,30 +11,30 @@ public interface ISession {
     /**
      * @return Username of this session
      */
-    public String getUsername();
+    String getUsername();
 
     /**
      * @return ID of the session
      */
-    public String getSessionID();
+    String getSessionID();
 
     /**
      * @return Player's UUID
      */
-    public String getUUID();
+    String getUUID();
 
     /**
      * @return Type of this session
      */
-    public ESessionType getType();
+    ESessionType getType();
 
     /**
      * @return User properties tied with this session
      */
-    public List<Prop> getProperties();
+    List<Prop> getProperties();
 
     /** A simple class for user properties. A property is a name-value pair. */
-    public final class Prop {
+    final class Prop {
         public String name, value;
     }
 

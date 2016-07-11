@@ -4,19 +4,18 @@ import sk.tomsik68.mclauncher.api.common.IOperatingSystem;
 import sk.tomsik68.mclauncher.api.common.MCLauncherAPI;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public final class Platform {
     // macos was renamed to osx in 1.6, so I've created a map of changed OSs
-    private static final HashMap<String, String> minecraftOsWrapper = new HashMap<String, String>();
+    private static final HashMap<String, String> minecraftOsWrapper = new HashMap<>();
 
-    public static final IOperatingSystem WINDOWS = new WindowsOS();
-    public static final IOperatingSystem MAC = new MacintoshOS();
-    public static final IOperatingSystem SOLARIS = new SolarisOS();
-    public static final IOperatingSystem UNIX  = new LinuxOS();
-    public static final IOperatingSystem UNKNOWN = new UnknownOS();
+    private static final IOperatingSystem WINDOWS = new WindowsOS();
+    private static final IOperatingSystem MAC = new MacintoshOS();
+    private static final IOperatingSystem SOLARIS = new SolarisOS();
+    private static final IOperatingSystem UNIX  = new LinuxOS();
+    private static final IOperatingSystem UNKNOWN = new UnknownOS();
 
-    public static final IOperatingSystem[] operatingSystems = new IOperatingSystem[]{ WINDOWS, MAC, SOLARIS, UNIX, UNKNOWN };
+    private static final IOperatingSystem[] operatingSystems = new IOperatingSystem[]{ WINDOWS, MAC, SOLARIS, UNIX, UNKNOWN };
 
     static {
         //                    newName | oldName
@@ -50,7 +49,7 @@ public final class Platform {
      * in case OS detection goes wrong(it doesn't go wrong very often) or for testing.
      * @param p - The operating system we want to use
      * */
-    public static void forcePlatform(IOperatingSystem p) {
+    private static void forcePlatform(IOperatingSystem p) {
         MCLauncherAPI.log.fine("Current platform: ".concat(p.getDisplayName()));
         currentOS = p;
     }

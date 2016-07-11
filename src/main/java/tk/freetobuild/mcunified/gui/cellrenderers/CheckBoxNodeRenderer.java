@@ -8,18 +8,19 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
-import java.io.File;
 
 /**
  * Created by liz on 7/10/16.
  */
 public class CheckBoxNodeRenderer implements TreeCellRenderer {
-    private JCheckBox leafRenderer = new JCheckBox();
+    private final JCheckBox leafRenderer = new JCheckBox();
     private ConfigCheckBoxNode config = null;
-    private DefaultTreeCellRenderer nonLeafRenderer = new DefaultTreeCellRenderer();
+    private final DefaultTreeCellRenderer nonLeafRenderer = new DefaultTreeCellRenderer();
 
-    Color selectionBorderColor, selectionForeground, selectionBackground,
-            textForeground, textBackground;
+    private final Color selectionForeground;
+    private final Color selectionBackground;
+    private final Color textForeground;
+    private final Color textBackground;
 
     public JCheckBox getLeafRenderer() {
         return leafRenderer;
@@ -44,7 +45,7 @@ public class CheckBoxNodeRenderer implements TreeCellRenderer {
         leafRenderer.setFocusPainted((booleanValue != null)
                 && (booleanValue.booleanValue()));
 
-        selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
+        Color selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
         selectionForeground = UIManager.getColor("Tree.selectionForeground");
         selectionBackground = UIManager.getColor("Tree.selectionBackground");
         textForeground = UIManager.getColor("Tree.textForeground");

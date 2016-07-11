@@ -77,8 +77,7 @@ public class ServerPinger {
         inputStream.close();
         socket.close();
         JSONObject obj = (JSONObject) JSONValue.parse(json);
-        UnifiedPingedServerInfo ping = new UnifiedPingedServerInfo(info, obj);
-        return ping;
+        return new UnifiedPingedServerInfo(info, obj);
     }
     private static int readVarInt(DataInputStream in) throws IOException {
         int i = 0;

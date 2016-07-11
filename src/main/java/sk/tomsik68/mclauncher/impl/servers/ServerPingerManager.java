@@ -16,7 +16,7 @@ public final class ServerPingerManager {
         threadPool = Executors.newFixedThreadPool(THREAD_COUNT);
     }
 
-    public static final ServerPingerManager getInstance(){
+    public static ServerPingerManager getInstance(){
         return instance;
     }
 

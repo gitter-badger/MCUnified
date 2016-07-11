@@ -5,10 +5,10 @@ import java.io.File;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 
-public class Artifact
+class Artifact
 {
-    private String path;
-    private String descriptor;
+    private final String path;
+    private final String descriptor;
     private String memo;
 
     public Artifact(String descriptor)
@@ -49,8 +49,8 @@ public class Artifact
 
     public String getDescriptor(){ return descriptor; }
     public String getPath()      { return path;       }
-    public String getMemo()      { return memo;       }
-    public void setMemo(String v){ memo = v;          }
+    private String getMemo()      { return memo;       }
+    public void setMemo(){ memo = "Out of Memory: Try restarting installer with JVM Argument: -Xmx1G";          }
     @Override
     public String toString()
     {

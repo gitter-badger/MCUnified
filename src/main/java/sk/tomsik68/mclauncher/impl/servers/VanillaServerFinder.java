@@ -55,7 +55,7 @@ public final class VanillaServerFinder extends Observable<FoundServerInfo> imple
             MCLauncherAPI.log.finer("Discovered server: '".concat(recvString).concat("'"));
             // we can construct FoundServerInfo using given information
             builder.motd(motd).port(port).ip(packet.getAddress().getHostAddress());
-            builder.property("recvString", recvString);
+            builder.property(recvString);
             FoundServerInfo server = builder.build();
             // and notify all observers about it
             notifyObservers(server);

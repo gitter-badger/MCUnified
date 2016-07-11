@@ -25,12 +25,11 @@ public class Main {
     public static File baseDir;
     public static Logger logger;
     public static MinecraftLauncherBackend backend;
-    public static YDLoginService service;
     public static GuiMain gui;
     public static void main(String[] args) {
         logger = Logger.getLogger("MCUnified");
         logger.info("Initializing Launcher");
-        service = new YDLoginService();
+        YDLoginService service = new YDLoginService();
         backend = new MinecraftLauncherBackend(Platform.getCurrentPlatform().getWorkingDirectory());
         baseDir = new File(Platform.getCurrentPlatform().getWorkingDirectory(), "mcunified");
         logger.info(String.format("Setting base directory to '%s'", baseDir.getAbsolutePath()));

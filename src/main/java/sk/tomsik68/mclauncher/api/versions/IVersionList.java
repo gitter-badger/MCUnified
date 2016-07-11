@@ -14,7 +14,7 @@ public interface IVersionList extends IObservable<String> {
      *
      * @throws Exception Network issues
      */
-    public void startDownload() throws Exception;
+    void startDownload() throws Exception;
 
     /**
      * Retrieves IVersion object with this ID
@@ -22,12 +22,12 @@ public interface IVersionList extends IObservable<String> {
      * @return IVersion object for the passed ID
      * @throws Exception - Network errors, JSON parsing errors, version inheritance problems
      */
-    public IVersion retrieveVersionInfo(String id) throws Exception;
+    IVersion retrieveVersionInfo(String id) throws Exception;
 
     /**
      *
      * @return LatestVersionInformation object
      * @throws Exception - Network errors, JSON parsing errors
      */
-    public LatestVersionInformation getLatestVersionInformation() throws Exception;
+    LatestVersionInformation getLatestVersionInformation() throws Exception;
 }

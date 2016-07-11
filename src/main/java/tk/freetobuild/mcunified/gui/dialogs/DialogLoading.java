@@ -2,17 +2,13 @@ package tk.freetobuild.mcunified.gui.dialogs;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 
-public class DialogLoading extends JDialog {
+class DialogLoading extends JDialog {
     private JPanel contentPane;
     private JProgressBar progressBar1;
     private JLabel statusLabel;

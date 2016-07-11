@@ -11,7 +11,7 @@ import java.util.Random;
 /**
  * Created by liz on 6/29/16.
  */
-public class MirrorData {
+class MirrorData {
     private static class Mirror {
         final String name;
         final String imageURL;
@@ -29,7 +29,7 @@ public class MirrorData {
 
     private final List<Mirror> mirrors;
     private int chosenMirror;
-    private VersionInfo version;
+    private final VersionInfo version;
     public MirrorData(VersionInfo version)
     {
         this.version = version;

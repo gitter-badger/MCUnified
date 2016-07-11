@@ -9,6 +9,7 @@ import java.util.Map;
  *
  * @author Tomsik68
  */
+@SuppressWarnings({"unused", "SameReturnValue"})
 public interface ILaunchSettings {
     /**
      * <B>Required</B>
@@ -16,7 +17,7 @@ public interface ILaunchSettings {
      *
      * @return initial heap size (-Xms argument)
      */
-    public String getInitHeap();
+    String getInitHeap();
 
     /**
      * <B>Required</B>
@@ -24,34 +25,34 @@ public interface ILaunchSettings {
      *
      * @return maximal heap size (-Xmx argument)
      */
-    public String getHeap();
+    String getHeap();
 
     /**
      * @return Map of custom parameters for either minecraft applet or minecraft
      * main method(depends on version). May be null.
      */
-    public Map<String, String> getCustomParameters();
+    Map<String, String> getCustomParameters();
 
     /**
      * @return command list to append before the minecraft launch command. Can
      * be glc-capture or other programs that need process pointer...
      */
-    public List<String> getCommandPrefix();
+    List<String> getCommandPrefix();
 
     /**
      * @return If applet should open a table with options to change(only works
      * with MCAssetsVersion). False if unsure.
      */
-    public boolean isModifyAppletOptions();
+    boolean isModifyAppletOptions();
 
     /**
      * @return Java executable location (e.g. C:\Program
      * Files\java\jre\bin\java.exe). If null, default java will be used
      */
-    public File getJavaLocation();
+    File getJavaLocation();
 
     /**
      * @return Additional arguments for java process
      */
-    public List<String> getJavaArguments();
+    List<String> getJavaArguments();
 }

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URL;
 import java.util.jar.JarFile;
 
 import argo.jdom.JdomParser;
@@ -22,7 +21,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.io.OutputSupplier;
 
-public class VersionInfo {
+class VersionInfo {
     private JsonRootNode versionData;
     private JarFile installerJar = null;
     public VersionInfo(URI installer)
@@ -45,7 +44,7 @@ public class VersionInfo {
             JdomParser parser = new JdomParser();
 
             try {
-                versionData = parser.parse(new InputStreamReader(installProfile, Charsets.UTF_8));
+                versionData = parser.parse(new InputStreamReader(installProfile != null ? installProfile : null, Charsets.UTF_8));
             } catch (Exception e) {
                 throw Throwables.propagate(e);
             }
@@ -97,7 +96,7 @@ public class VersionInfo {
     {
         return new File(new File(path, getMinecraftVersion()),getMinecraftVersion()+".jar");
     }
-    public String getContainedJar()
+    private String getContainedJar()
     {
         return this.versionData.getStringValue("install","filePath");
     }
@@ -114,7 +113,7 @@ public class VersionInfo {
         ByteStreams.copy(inputStream, outputSupplier);
     }
 
-    public String getMinecraftVersion()
+    private String getMinecraftVersion()
     {
         return this.versionData.getStringValue("install","minecraft");
     }

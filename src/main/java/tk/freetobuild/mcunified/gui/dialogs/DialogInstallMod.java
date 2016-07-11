@@ -21,9 +21,9 @@ import java.util.concurrent.ExecutionException;
 public class DialogInstallMod extends JDialog {
     private JPanel contentPane;
     private JButton buttonCancel;
-    public JTextField searchField;
-    public JButton buttonSearch;
-    public JPanel modPanel;
+    private JTextField searchField;
+    private JButton buttonSearch;
+    private JPanel modPanel;
     private JScrollPane scrollPane;
 
     public DialogInstallMod(UnifiedMCInstance instance) {
@@ -57,11 +57,7 @@ public class DialogInstallMod extends JDialog {
         SwingWorker<List<CurseModInfo>, Void> worker = new SwingWorker<List<CurseModInfo>, Void>() {
             @Override
             protected List<CurseModInfo> doInBackground() throws Exception {
-                try {
-                    return CurseModList.loadTopMods().next();
-                } catch (IOException e) {
-                    return new ArrayList<>();
-                }
+                return CurseModList.loadTopMods().next();
             }
 
             @Override

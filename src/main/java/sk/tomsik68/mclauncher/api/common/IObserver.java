@@ -11,8 +11,7 @@ public interface IObserver<E> {
     /**
      * This method indicates, that an object in an observable has updated.
      *
-     * @param observable The source
      * @param changed    Changed object
      */
-    public void onUpdate(IObservable<E> observable, E changed);
+    void onUpdate(E changed);
 }

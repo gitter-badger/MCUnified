@@ -17,12 +17,12 @@ public interface IVersionInstaller {
      * @param progress ProgressMonitor which will watch the whole progress
      * @throws Exception I/O errors, download errors, incompatibility etc.
      */
-    public void install(IVersion changed, MinecraftInstance mc, IProgressMonitor progress) throws Exception;
+    void install(IVersion changed, MinecraftInstance mc, IProgressMonitor progress) throws Exception;
 
     /**
      * Adds listener to be notified when version installation finishes. <b>Listeners will be cleared after ONE installation.</b>
      *
      * @param listener Listener to be notified
      */
-    public void addVersionInstallListener(IVersionInstallListener listener);
+    void addVersionInstallListener(IVersionInstallListener listener);
 }

@@ -2,20 +2,13 @@ package net.minecraftforge.installer;
 
 import argo.format.PrettyJsonFormatter;
 import argo.jdom.*;
-import argo.saj.InvalidSyntaxException;
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.io.Files;
 import net.minecraftforge.installer.platform.Platform;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 
-import javax.swing.*;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -29,11 +22,11 @@ import java.util.Map;
  * Created by liz on 6/29/16.
  */
 public class ForgeArtifact {
-    private String branch;
-    private int build;
-    private String mcversion;
-    private String version;
-    private Map<String,URI> files = new HashMap<>();
+    private final String branch;
+    private final int build;
+    private final String mcversion;
+    private final String version;
+    private final Map<String,URI> files = new HashMap<>();
     public ForgeArtifact(JSONObject obj,String baseURI) {
         branch = (String) obj.get("branch");
         build = (int)obj.get("build");
@@ -58,11 +51,11 @@ public class ForgeArtifact {
     public String getMcversion() {
         return mcversion;
     }
-    public boolean hasFile(String file) {
-        return files.containsKey(file);
+    private boolean hasFile() {
+        return files.containsKey("installer");
     }
-    public URI getFile(String file) {
-        return files.get(file);
+    private URI getFile() {
+        return files.get("installer");
     }
     public Collection<URI> getFiles() {
         return files.values();
@@ -74,9 +67,9 @@ public class ForgeArtifact {
         return String.valueOf(build);
     }
     public JSONObject install(IMonitor monitor) throws ForgeInstallException {
-        if(!this.hasFile("installer"))
+        if(!this.hasFile())
             throw new ForgeInstallException("There is no installer candidate for build '"+this.getBuild()+"'");
-        VersionInfo version = new VersionInfo(this.getFile("installer"));
+        VersionInfo version = new VersionInfo(this.getFile());
         File target = Platform.getCurrentPlatform().getWorkingDirectory();
         if (!target.exists())
         {
@@ -94,7 +87,7 @@ public class ForgeArtifact {
         File targetLibraryFile = version.getLibraryPath(librariesDir);
         List<Artifact> grabbed = Lists.newArrayList();
         List<Artifact> bad = Lists.newArrayList();
-        DownloadUtils.downloadInstalledLibraries("clientreq", librariesDir, monitor, libraries, progress, grabbed, bad,new MirrorData(version));
+        DownloadUtils.downloadInstalledLibraries(librariesDir, monitor, libraries, progress, grabbed, bad,new MirrorData(version));
         monitor.close();
         if (bad.size() > 0)
         {

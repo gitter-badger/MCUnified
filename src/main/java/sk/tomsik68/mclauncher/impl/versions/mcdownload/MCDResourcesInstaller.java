@@ -10,6 +10,7 @@ import sk.tomsik68.mclauncher.api.common.mc.MinecraftInstance;
 import sk.tomsik68.mclauncher.api.ui.IProgressMonitor;
 import sk.tomsik68.mclauncher.util.FilePathBuilder;
 import sk.tomsik68.mclauncher.util.FileUtils;
+import tk.freetobuild.mcunified.Main;
 
 final class MCDResourcesInstaller {
 
@@ -53,7 +54,7 @@ final class MCDResourcesInstaller {
     /**
      * Download all the {@link Asset} objects inside this index
      * @param index AssetIndex to download from
-     * @param progress
+     * @param progress Monitor to display info to
      * @throws Exception
      */
     private void downloadAssetList(AssetIndex index, IProgressMonitor progress) throws Exception {
@@ -63,7 +64,8 @@ final class MCDResourcesInstaller {
                 progress.setStatus("Updating asset file: " + asset.getKey());
             
             File dest = getDestFile(index, asset);
-            dest.getParentFile().mkdirs();
+            if(!dest.getParentFile().mkdirs())
+                Main.logger.severe("Unable to create directory "+dest.getParentFile().getPath());
             if (!dest.exists() || dest.length() != asset.getSize()) {
                 MCLauncherAPI.log.finest("Downloading ".concat(asset.getKey()));
                 FileUtils.downloadFileWithProgress(asset.getUrl(), dest, progress);
@@ -85,7 +87,8 @@ final class MCDResourcesInstaller {
         // virtual indexes have their assets downloaded to assets/virtual/1.7.3 etc
         if(index.isVirtual()){
             File assetsDir = new File(virtualDir, index.getName());
-            assetsDir.mkdirs();
+            if(!assetsDir.mkdirs())
+                Main.logger.severe("Unable to create directory "+assetsDir.getPath());
             String path = asset.getKey().replace('/', File.separatorChar);
             result = new File(assetsDir, path);
         } else {

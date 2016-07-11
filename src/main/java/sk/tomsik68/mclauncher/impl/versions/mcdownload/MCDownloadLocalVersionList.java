@@ -11,7 +11,6 @@ import sk.tomsik68.mclauncher.api.versions.LatestVersionInformation;
 import sk.tomsik68.mclauncher.impl.common.Observable;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileReader;
 
 final class MCDownloadLocalVersionList extends Observable<String> implements IVersionList {
@@ -31,12 +30,7 @@ final class MCDownloadLocalVersionList extends Observable<String> implements IVe
             MCLauncherAPI.log.fine("'versions' folder at '".concat(versionsFolder.getAbsolutePath()).concat("' doesn't exist or is invalid."));
             return;
         }
-        File[] versionFolders = versionsFolder.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return file.isDirectory();
-            }
-        });
+        File[] versionFolders = versionsFolder.listFiles(File::isDirectory);
         for(File versionFolder : versionFolders){
             // do a quick check whether or not the needed JSON file exists
             File jsonFile = new File(versionFolder, versionFolder.getName().concat(".json"));

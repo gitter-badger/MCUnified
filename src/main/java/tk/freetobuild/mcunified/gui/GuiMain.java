@@ -3,8 +3,6 @@ package tk.freetobuild.mcunified.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.sun.corba.se.spi.activation.Server;
-import jdk.nashorn.internal.ir.debug.JSONWriter;
 import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDAuthProfile;
 import tk.freetobuild.mcunified.Utils;
 import tk.freetobuild.mcunified.Main;
@@ -28,14 +26,9 @@ import sk.tomsik68.mclauncher.api.servers.ServerInfo;
 import sk.tomsik68.mclauncher.impl.common.Platform;
 import sk.tomsik68.mclauncher.impl.common.mc.VanillaServerStorage;
 import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDProfileIO;
-import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDServiceAuthenticationException;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -51,50 +44,48 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
- * Created by liz on 6/22/16.
+ * The mainGui form.
  */
 public class GuiMain {
     private JPanel panelMain;
-    private JComboBox comboBox1;
+    private JComboBox<Object> comboBox1;
     private JButton launchButton;
-    public JList instanceList;
-    public JLabel newLabel;
-    public JLabel importLabel;
-    public JLabel removeLabel;
-    public JLabel exportLabel;
-    public JTabbedPane tabbedPane1;
-    public JLabel aboutLabel;
-    public JLabel instanceIcon;
-    public JLabel instanceNameLabel;
-    public JLabel instanceVersionLabel;
-    public JScrollPane instanceServerListContainer;
-    public JPanel instanceServerList;
-    public JTabbedPane tabbedPane2;
-    public JList jarModList;
-    public JButton removeJarModButton;
-    public JButton addJarModButton;
-    public JButton disableJarModButton;
-    public JList loaderModList;
-    public JButton removeLoaderModButton;
-    public JButton disableLoaderModButton;
-    public JButton addLoaderModButton;
-    public JButton installForgeButton;
-    public JButton installButton;
-    public JPanel jarModInstallerPanel;
-    public JProgressBar statusProgresBar;
-    public JLabel statusLabel;
-    public JLabel accountsLabel;
-    private JList worldList;
+    public JList<UnifiedMCInstance> instanceList;
+    private JLabel newLabel;
+    private JLabel importLabel;
+    private JLabel removeLabel;
+    private JLabel exportLabel;
+    private JTabbedPane tabbedPane1;
+    private JLabel aboutLabel;
+    private JLabel instanceIcon;
+    private JLabel instanceNameLabel;
+    private JLabel instanceVersionLabel;
+    private JScrollPane instanceServerListContainer;
+    private JPanel instanceServerList;
+    private JTabbedPane tabbedPane2;
+    private JList<JLabel> jarModList;
+    private JButton removeJarModButton;
+    private JButton addJarModButton;
+    private JButton disableJarModButton;
+    public JList<ForgeMod> loaderModList;
+    private JButton removeLoaderModButton;
+    private JButton disableLoaderModButton;
+    private JButton addLoaderModButton;
+    private JButton installForgeButton;
+    private JButton installButton;
+    private JPanel jarModInstallerPanel;
+    private JProgressBar statusProgresBar;
+    private JLabel statusLabel;
+    private JLabel accountsLabel;
+    private JList<WorldInstance> worldList;
     private JSpinner memMinSpinner;
     private JSpinner memMaxSpinner;
     private JButton saveButton;
     private JLabel importWorldButton;
     private JLabel exportWorldButton;
-    MainFrame parent;
 
-    public GuiMain(MainFrame parent) {
+    GuiMain(MainFrame parent) {
         super();
-        this.parent = parent;
         $$$setupUI$$$();
         Main.logger.addHandler(new Handler() {
             @Override
@@ -142,11 +133,11 @@ public class GuiMain {
         //endregion
         //region instanceList
         instanceList.setBorder(BorderFactory.createTitledBorder(new JButton().getBorder(), "Instances"));
-        instanceList.setModel(new DefaultListModel());
+        instanceList.setModel(new DefaultListModel<>());
         addInstances();
         instanceList.addListSelectionListener(e -> {
             if (!instanceList.isSelectionEmpty()) {
-                populateInstancePanel((UnifiedMCInstance) instanceList.getSelectedValue());
+                populateInstancePanel(instanceList.getSelectedValue());
                 tabbedPane1.setVisible(true);
             } else {
                 tabbedPane1.setVisible(false);
@@ -166,7 +157,7 @@ public class GuiMain {
             public void keyPressed(KeyEvent keyEvent) {
                 if (keyEvent.getKeyCode() == KeyEvent.VK_DELETE) {
                     if (!instanceList.isSelectionEmpty()) {
-                        UnifiedMCInstance mcinstance = (UnifiedMCInstance) instanceList.getSelectedValue();
+                        UnifiedMCInstance mcinstance = instanceList.getSelectedValue();
                         Utils.recursiveDelete(mcinstance.getLocation());
                         ((DefaultListModel) instanceList.getModel()).removeElement(mcinstance);
                     }
@@ -183,7 +174,7 @@ public class GuiMain {
         //region launchButton
         launchButton.addActionListener(e -> {
             try {
-                UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
+                UnifiedMCInstance instance = instanceList.getSelectedValue();
                 instance.launch(((IProfile) comboBox1.getSelectedItem()).getName());
             } catch (Exception e1) {
                 e1.printStackTrace();
@@ -193,7 +184,7 @@ public class GuiMain {
         //region installForge
         installForgeButton.addActionListener(e -> {
             if (!instanceList.isSelectionEmpty()) {
-                UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
+                UnifiedMCInstance instance = instanceList.getSelectedValue();
                 DialogInstallForge dif;
                 (dif = new DialogInstallForge(instance)).setVisible(true);
                 ForgeArtifact artifact = dif.getArtifact();
@@ -203,7 +194,7 @@ public class GuiMain {
                             instance.addPatch(patch);
                             JLabel patchLabel = new JLabel(patch.get("friendlyName").toString());
                             patchLabel.setEnabled(false);
-                            ((DefaultListModel) jarModList.getModel()).add(0, patchLabel);
+                            ((DefaultListModel<JLabel>) jarModList.getModel()).add(0, patchLabel);
                             installForgeButton.setEnabled(false);
                         } catch (IOException ignored) {
                         }
@@ -218,8 +209,8 @@ public class GuiMain {
         //region removeJarMod
         removeJarModButton.addActionListener(e -> {
             if (!jarModList.isSelectionEmpty()) {
-                String name = ((JLabel) jarModList.getSelectedValue()).getText();
-                UnifiedMCInstance instance = ((UnifiedMCInstance) instanceList.getSelectedValue());
+                String name = jarModList.getSelectedValue().getText();
+                UnifiedMCInstance instance = instanceList.getSelectedValue();
                 File f;
                 if (name.endsWith("(disabled)"))
                     f = new File(instance.getLocation(), "jarMods" + File.separator + name.substring(0, name.lastIndexOf(" (disabled)")) + ".disabled");
@@ -238,14 +229,15 @@ public class GuiMain {
         //region disableJarMod
         disableJarModButton.addActionListener(e -> {
             if (!jarModList.isSelectionEmpty()) {
-                UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
-                JLabel label = (JLabel) jarModList.getSelectedValue();
+                UnifiedMCInstance instance = instanceList.getSelectedValue();
+                JLabel label = jarModList.getSelectedValue();
                 if (label.getText().endsWith(" (disabled)")) {
                     String name = label.getText().substring(0, label.getText().lastIndexOf(" (disabled)"));
                     Main.logger.info("Enabling " + name);
                     File in = new File(instance.getLocation(), "jarMods" + File.separator + name + ".disabled");
                     File out = new File(instance.getLocation(), "jarMods" + File.separator + name);
-                    in.renameTo(out);
+                    if (!in.renameTo(out))
+                        Main.logger.info("Unable to rename file " + in.getName());
                     label.setText(name);
                     Main.logger.info("Enabled " + name);
                     jarModList.repaint();
@@ -254,7 +246,8 @@ public class GuiMain {
                     Main.logger.info("Disabling " + label.getText());
                     File in = new File(instance.getLocation(), "jarMods" + File.separator + label.getText());
                     File out = new File(in.getPath() + ".disabled");
-                    in.renameTo(out);
+                    if (!in.renameTo(out))
+                        Main.logger.info("Unable to rename file " + in.getName());
                     Main.logger.info("Disabled " + label.getText());
                     label.setText(label.getText() + " (disabled)");
                     jarModList.repaint();
@@ -272,9 +265,10 @@ public class GuiMain {
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             if (fileChooser.showDialog(parent, "Add Mod") == JFileChooser.APPROVE_OPTION) {
                 File in = fileChooser.getSelectedFile();
-                File out = new File(((UnifiedMCInstance) instanceList.getSelectedValue()).getLocation(), "jarMods" + File.separator + in.getName());
+                File out = new File(instanceList.getSelectedValue().getLocation(), "jarMods" + File.separator + in.getName());
                 if (!out.getParentFile().exists())
-                    out.getParentFile().mkdirs();
+                    if (!out.getParentFile().mkdirs())
+                        Main.logger.severe("Unable to make directory " + out.getParentFile().getName());
                 Main.logger.info("Copying " + in.getName());
                 ProgressMonitorWorker worker = new ProgressMonitorWorker(mon -> {
                     mon.setMax((int) (in.length()));
@@ -295,7 +289,7 @@ public class GuiMain {
 
                 }, () -> {
                     Main.logger.info(out.getName() + " copied!");
-                    ((DefaultListModel) jarModList.getModel()).addElement(new JLabel(out.getName()));
+                    ((DefaultListModel<JLabel>) jarModList.getModel()).addElement(new JLabel(out.getName()));
                     statusProgresBar.setValue(0);
                 });
                 worker.addPropertyChangeListener(new ProgressMonitorListener(Main.logger, statusProgresBar));
@@ -307,9 +301,9 @@ public class GuiMain {
         jarModList.setCellRenderer(new LabelListRenderer());
         jarModList.addListSelectionListener(e -> {
             removeJarModButton.setEnabled(!jarModList.isSelectionEmpty());
-            disableJarModButton.setEnabled(!jarModList.isSelectionEmpty() && ((JLabel) jarModList.getSelectedValue()).isEnabled());
+            disableJarModButton.setEnabled(!jarModList.isSelectionEmpty() && jarModList.getSelectedValue().isEnabled());
             if (!jarModList.isSelectionEmpty()) {
-                if (((JLabel) jarModList.getSelectedValue()).getText().endsWith(" (disabled)"))
+                if (jarModList.getSelectedValue().getText().endsWith(" (disabled)"))
                     disableJarModButton.setText("Enable");
                 else
                     disableJarModButton.setText("Disable");
@@ -325,9 +319,10 @@ public class GuiMain {
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             if (fileChooser.showDialog(parent, "Add Mod") == JFileChooser.APPROVE_OPTION) {
                 File in = fileChooser.getSelectedFile();
-                File out = new File(((UnifiedMCInstance) instanceList.getSelectedValue()).getLocation(), "mods" + File.separator + in.getName());
+                File out = new File(instanceList.getSelectedValue().getLocation(), "mods" + File.separator + in.getName());
                 if (!out.getParentFile().exists())
-                    out.getParentFile().mkdirs();
+                    if (!out.getParentFile().mkdirs())
+                        Main.logger.info("Unable to create directory " + out.getParentFile().getName());
                 Main.logger.info("Copying " + in.getName());
                 ProgressMonitorWorker worker = new ProgressMonitorWorker(mon -> {
                     mon.setMax((int) (in.length()));
@@ -348,7 +343,7 @@ public class GuiMain {
 
                 }, () -> {
                     Main.logger.info(out.getName() + " copied!");
-                    ((DefaultListModel) loaderModList.getModel()).addElement(new ForgeMod(out));
+                    ((DefaultListModel<ForgeMod>) loaderModList.getModel()).addElement(new ForgeMod(out));
                     statusProgresBar.setValue(0);
                 });
                 worker.addPropertyChangeListener(new ProgressMonitorListener(Main.logger, statusProgresBar));
@@ -359,16 +354,18 @@ public class GuiMain {
         //region removeLoaderMod
         removeLoaderModButton.addActionListener(e -> {
             if (!loaderModList.isSelectionEmpty()) {
-                ForgeMod mod = (ForgeMod) loaderModList.getSelectedValue();
+                ForgeMod mod = loaderModList.getSelectedValue();
                 File f = mod.getFile();
-                f.delete();
+                if (!f.delete()) {
+                    Main.logger.severe("Unable to delete file " + f.getPath());
+                }
                 ((DefaultListModel) loaderModList.getModel()).removeElementAt(loaderModList.getSelectedIndex());
             }
         });
         //endregion removeLoaderMod
         //region disableLoaderMod
         disableLoaderModButton.addActionListener(e -> {
-            ForgeMod mod = (ForgeMod) loaderModList.getSelectedValue();
+            ForgeMod mod = loaderModList.getSelectedValue();
             if (mod.isEnabled()) {
                 mod.disable();
                 disableLoaderModButton.setText("Enable");
@@ -395,12 +392,12 @@ public class GuiMain {
         });
         //endregion loaderModList
         //region instalLoaderMod
-        installButton.addActionListener(e -> new DialogInstallMod((UnifiedMCInstance) instanceList.getSelectedValue()).setVisible(true));
+        installButton.addActionListener(e -> new DialogInstallMod(instanceList.getSelectedValue()).setVisible(true));
         worldList.setCellRenderer(new WorldListRenderer());
         //endregion installLoaderMod
 
         saveButton.addActionListener(e -> {
-            UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
+            UnifiedMCInstance instance = instanceList.getSelectedValue();
             instance.setMinMemory(MemoryModel.parseToMB(memMinSpinner.getValue().toString()));
             instance.setMaxMemory(MemoryModel.parseToMB(memMaxSpinner.getValue().toString()));
             try {
@@ -441,7 +438,7 @@ public class GuiMain {
         instanceVersionLabel.setText(instance.version);
         VanillaServerStorage storage = new VanillaServerStorage(instance);
         instanceServerList.removeAll();
-        DefaultListModel model = new DefaultListModel();
+        DefaultListModel<JLabel> model = new DefaultListModel<>();
         if (new File(instance.getLocation(), "servers.dat").exists()) {
             try {
                 for (ServerInfo server : storage.loadServers()) {
@@ -475,76 +472,91 @@ public class GuiMain {
             model.addElement(label);
         });
         loadJarMods(model, instance);
-        loadLoaderMods(new DefaultListModel(), instance);
+        loadLoaderMods(new DefaultListModel<>(), instance);
         loadWorlds(instance);
         populateOptions(instance);
     }
 
-    public void populateOptions(UnifiedMCInstance instance) {
+    private void populateOptions(UnifiedMCInstance instance) {
         memMaxSpinner.setModel(new MemoryModel(instance.getMaxMemory()));
         memMinSpinner.setModel(new MemoryModel(instance.getMinMemory()));
     }
 
-    public void loadJarMods(DefaultListModel model, UnifiedMCInstance instance) {
+    private void loadJarMods(DefaultListModel<JLabel> model, UnifiedMCInstance instance) {
         File jarMods = new File(instance.getLocation(), "jarMods");
         if (!jarMods.exists())
-            jarMods.mkdirs();
-        for (File file : jarMods.listFiles()) {
-            if (file.getName().endsWith(".disabled"))
-                model.addElement(new JLabel(file.getName().replaceFirst("[.][^.]+$", "") + " (disabled)"));
-            else
-                model.addElement(new JLabel(file.getName()));
+            if (!jarMods.mkdirs())
+                Main.logger.severe("Unable to create directory " + jarMods.getPath());
+        File[] files = jarMods.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.getName().endsWith(".disabled"))
+                    model.addElement(new JLabel(file.getName().replaceFirst("[.][^.]+$", "") + " (disabled)"));
+                else
+                    model.addElement(new JLabel(file.getName()));
+            }
         }
         jarModList.setModel(model);
     }
 
-    public void loadLoaderMods(DefaultListModel model, UnifiedMCInstance instance) {
+    public void loadLoaderMods(DefaultListModel<ForgeMod> model, UnifiedMCInstance instance) {
         model.clear();
         File jarMods = new File(instance.getLocation(), "mods");
         if (!jarMods.exists())
-            jarMods.mkdirs();
-        for (File file : jarMods.listFiles()) {
-            try {
-                model.addElement(new ForgeMod(file));
-            } catch (Exception ex) {
-
+            if (!jarMods.mkdirs())
+                Main.logger.severe("Unable to make directory" + jarMods.getPath());
+        File[] files = jarMods.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                try {
+                    model.addElement(new ForgeMod(file));
+                } catch (Exception ignored) {
+                }
             }
+            loaderModList.setModel(model);
         }
-        loaderModList.setModel(model);
     }
 
-    public JPanel getPanelMain() {
+    JPanel getPanelMain() {
         return panelMain;
     }
 
     private void addInstances() {
         File instances = new File(Main.baseDir, "instances");
         if (!instances.exists())
-            instances.mkdirs();
-        for (File f : instances.listFiles()) {
-            if (f.isDirectory()) {
-                File config = new File(f, "instance.json");
-                if (config.exists()) {
-                    try {
-                        UnifiedMCInstance instance = new UnifiedMCInstance(f, (JSONObject) JSONValue.parse(new FileInputStream(config)));
-                        ((DefaultListModel) instanceList.getModel()).addElement(instance);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+            if (!instances.mkdirs())
+                Main.logger.severe("Unable to create directory " + instances.getPath());
+        File[] files = instances.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    File config = new File(f, "instance.json");
+                    if (config.exists()) {
+                        try {
+                            UnifiedMCInstance instance = new UnifiedMCInstance(f, (JSONObject) JSONValue.parse(new FileInputStream(config)));
+                            ((DefaultListModel<UnifiedMCInstance>) instanceList.getModel()).addElement(instance);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
         }
     }
 
-    public void loadWorlds(UnifiedMCInstance instance) {
-        DefaultListModel model = new DefaultListModel();
+    private void loadWorlds(UnifiedMCInstance instance) {
+        DefaultListModel<WorldInstance> model = new DefaultListModel<>();
         File saves = new File(instance.getLocation(), "saves");
-        if(!saves.exists())
-            saves.mkdirs();
-        for (File f : saves.listFiles()) {
-            model.addElement(new WorldInstance(f));
+        if (!saves.exists())
+            if (!saves.mkdirs())
+                Main.logger.severe("Unable to create directory " + saves.getPath());
+        File[] files = saves.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                model.addElement(new WorldInstance(f));
+            }
+            worldList.setModel(model);
         }
-        worldList.setModel(model);
     }
 
     private void createUIComponents() {
@@ -553,7 +565,7 @@ public class GuiMain {
         newLabel = setupLabelButton("/images/toolbar/new", () -> new DialogNewInstance(GuiMain.this).setVisible(true));
         //endregion newInstance
         //region import
-        importLabel = setupLabelButton("/images/toolbar/import", this::importModpack);
+        importLabel = setupLabelButton("/images/toolbar/import", this::importModPack);
         //endregion newInstance
         //region export
         exportLabel = setupLabelButton("/images/toolbar/export", this::exportInstance);
@@ -561,9 +573,9 @@ public class GuiMain {
         //region removeLabel
         removeLabel = setupLabelButton("/images/toolbar/remove", () -> {
             if (!instanceList.isSelectionEmpty()) {
-                UnifiedMCInstance mcinstance = (UnifiedMCInstance) instanceList.getSelectedValue();
-                Utils.recursiveDelete(mcinstance.getLocation());
-                ((DefaultListModel) instanceList.getModel()).removeElement(mcinstance);
+                UnifiedMCInstance mcInstance = instanceList.getSelectedValue();
+                Utils.recursiveDelete(mcInstance.getLocation());
+                ((DefaultListModel) instanceList.getModel()).removeElement(mcInstance);
             }
         });
         //endregion removeLabel
@@ -582,8 +594,8 @@ public class GuiMain {
         exportWorldButton = setupLabelButton("/images/curseinstaller/download", this::compressWorld);
     }
 
-    public void importWorld() {
-        UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
+    private void importWorld() {
+        UnifiedMCInstance instance = instanceList.getSelectedValue();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select world");
         fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
@@ -597,7 +609,7 @@ public class GuiMain {
                     File worldFolderOutput;
                     Utils.extractEntryDirectory(worldFolderOutput = new File(instance.getLocation(), "saves" + File.separator + Utils.getZipEntryName(worldFolder)), zf, worldFolder);
                     Main.logger.info("World Extracted");
-                    ((DefaultListModel) worldList.getModel()).addElement(new WorldInstance(worldFolderOutput));
+                    ((DefaultListModel<WorldInstance>) worldList.getModel()).addElement(new WorldInstance(worldFolderOutput));
                 } else {
                     Main.logger.info("Invalid Zip");
                 }
@@ -607,25 +619,25 @@ public class GuiMain {
         }
     }
 
-    public void importModpack() {
+    private void importModPack() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
         fileChooser.setFileFilter(new FileNameExtensionFilter("Modpack Descriptor", "json"));
-        fileChooser.setDialogTitle("Import Modpack");
+        fileChooser.setDialogTitle("Import ModPack");
         if (fileChooser.showDialog(panelMain, "Import") == JFileChooser.APPROVE_OPTION) {
             File f = fileChooser.getSelectedFile();
             try {
                 JSONObject object = (JSONObject) JSONValue.parse(new FileInputStream(f));
-                UnifiedMCInstance modpack = Utils.installModpack(object.get("name").toString(), object);
-                modpack.save();
-                ((DefaultListModel) instanceList.getModel()).addElement(modpack);
+                UnifiedMCInstance modPack = Utils.installModpack(JOptionPane.showInputDialog(panelMain, "Enter name for new Instance"), object);
+                modPack.save();
+                ((DefaultListModel<UnifiedMCInstance>) instanceList.getModel()).addElement(modPack);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public ZipEntry findWorldFolder(ZipFile file) {
+    private ZipEntry findWorldFolder(ZipFile file) {
         Enumeration<? extends ZipEntry> entries = file.entries();
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
@@ -636,9 +648,9 @@ public class GuiMain {
         return null;
     }
 
-    public void compressWorld() {
+    private void compressWorld() {
         if (!worldList.isSelectionEmpty()) {
-            WorldInstance world = (WorldInstance) worldList.getSelectedValue();
+            WorldInstance world = worldList.getSelectedValue();
             File inputFolder = world.getDir();
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Export world");
@@ -649,7 +661,8 @@ public class GuiMain {
                 if (!outputFile.getName().endsWith(".zip"))
                     outputFile = new File(outputFile.getPath() + ".zip");
                 if (!outputFile.getParentFile().exists())
-                    outputFile.getParentFile().mkdirs();
+                    if (!outputFile.getParentFile().mkdirs())
+                        Main.logger.severe("Unable to create directory " + outputFile.getParentFile().getPath());
                 try {
                     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(outputFile));
                     zos.putNextEntry(new ZipEntry(inputFolder.getName() + "/"));
@@ -663,9 +676,9 @@ public class GuiMain {
         }
     }
 
-    public void exportInstance() {
+    private void exportInstance() {
         if (!instanceList.isSelectionEmpty()) {
-            UnifiedMCInstance instance = (UnifiedMCInstance) instanceList.getSelectedValue();
+            UnifiedMCInstance instance = instanceList.getSelectedValue();
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
             fileChooser.setDialogTitle("Export Instance as Modpack");
@@ -675,7 +688,8 @@ public class GuiMain {
                 if (!f.getName().endsWith(".json"))
                     f = new File(f.getPath() + ".json");
                 if (!f.getParentFile().exists())
-                    f.getParentFile().mkdirs();
+                    if (!f.getParentFile().mkdirs())
+                        Main.logger.severe("Unable to create directory " + f.getParentFile().getPath());
                 DialogCreateModpack dcm = new DialogCreateModpack(instance);
                 dcm.setVisible(true);
                 if (!dcm.isCancelled()) {
@@ -707,18 +721,9 @@ public class GuiMain {
         panel1.setLayout(new GridBagLayout());
         panel1.setBackground(new Color(-7366757));
         panelMain.add(panel1, BorderLayout.CENTER);
-        instanceList = new JList();
-        instanceList.setSelectionMode(0);
-        GridBagConstraints gbc;
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.ipadx = 50;
-        panel1.add(instanceList, gbc);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -891,6 +896,16 @@ public class GuiMain {
         saveButton = new JButton();
         saveButton.setText("Save");
         panel9.add(saveButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel1.add(scrollPane1, gbc);
+        instanceList = new JList();
+        instanceList.setSelectionMode(0);
+        scrollPane1.setViewportView(instanceList);
         final JPanel panel11 = new JPanel();
         panel11.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         panelMain.add(panel11, BorderLayout.SOUTH);

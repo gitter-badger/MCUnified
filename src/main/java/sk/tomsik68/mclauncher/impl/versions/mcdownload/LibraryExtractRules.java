@@ -5,19 +5,18 @@ import net.minidev.json.JSONObject;
 import sk.tomsik68.mclauncher.util.IExtractRules;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 /**
  * Library extraction filter
  */
 final class LibraryExtractRules implements IExtractRules {
-    private ArrayList<String> exclude = new ArrayList<String>();
+    private final ArrayList<String> exclude = new ArrayList<>();
 
     public LibraryExtractRules(JSONObject object) {
         JSONArray excludeArray = (JSONArray) object.get("exclude");
-        for (Object obj : excludeArray) {
-            exclude.add(obj.toString());
-        }
+        exclude.addAll(excludeArray.stream().map(Object::toString).collect(Collectors.toList()));
     }
 
     /**

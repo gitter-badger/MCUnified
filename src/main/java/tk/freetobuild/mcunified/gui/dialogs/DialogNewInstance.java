@@ -28,8 +28,8 @@ public class DialogNewInstance extends JDialog {
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField textField1;
-    private JComboBox comboBox1;
-    GuiMain parent;
+    private JComboBox<String> comboBox1;
+    private final GuiMain parent;
 
     public DialogNewInstance(GuiMain parent) {
         try {
@@ -65,7 +65,7 @@ public class DialogNewInstance extends JDialog {
         try {
             List<String> versions = getVersionList();
             versions.forEach(comboBox1::addItem);
-            comboBox1.addActionListener(this::isContentsValid);
+            comboBox1.addActionListener((e) -> isContentsValid());
             textField1.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void insertUpdate(DocumentEvent documentEvent) {
@@ -83,7 +83,7 @@ public class DialogNewInstance extends JDialog {
                 }
 
                 private void update() {
-                    isContentsValid(null);
+                    isContentsValid();
                 }
             });
         } catch (Exception e) {
@@ -91,18 +91,20 @@ public class DialogNewInstance extends JDialog {
         }
     }
 
-    private void isContentsValid(ActionEvent e) {
+    private void isContentsValid() {
         if (comboBox1.getSelectedIndex() >= 0 && textField1.getText().length() > 0) {
             buttonOK.setEnabled(true);
         } else {
             buttonOK.setEnabled(false);
         }
     }
+
     private void onOK() {
         UnifiedMCInstance instance = new UnifiedMCInstance(textField1.getText(), comboBox1.getSelectedItem().toString());
-        ((DefaultListModel) parent.instanceList.getModel()).addElement(instance);
+        ((DefaultListModel<UnifiedMCInstance>) parent.instanceList.getModel()).addElement(instance);
         if (!instance.getLocation().exists())
-            instance.getLocation().mkdirs();
+            if (!instance.getLocation().mkdirs())
+                Main.logger.severe("Unable to create directory " + instance.getLocation().getPath());
         try {
             instance.save();
         } catch (IOException e) {

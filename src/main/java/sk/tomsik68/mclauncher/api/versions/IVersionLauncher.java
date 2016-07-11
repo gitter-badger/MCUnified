@@ -26,7 +26,7 @@ public interface IVersionLauncher {
      * @return Process which was created
      * @throws Exception various errors
      */
-    public List<String> getLaunchCommand(ISession session, MinecraftInstance mc, ServerInfo server, IVersion version, ILaunchSettings settings, IModdingProfile mods)
+    List<String> getLaunchCommand(ISession session, MinecraftInstance mc, ServerInfo server, IVersion version, ILaunchSettings settings, IModdingProfile mods)
             throws Exception;
 
 }

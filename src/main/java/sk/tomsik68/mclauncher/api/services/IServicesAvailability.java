@@ -10,5 +10,5 @@ public interface IServicesAvailability {
      * @param name Name of the service
      * @return True if specified service is available
      */
-    public boolean isServiceAvailable(String name);
+    boolean isServiceAvailable(String name);
 }

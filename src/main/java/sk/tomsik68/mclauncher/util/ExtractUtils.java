@@ -1,5 +1,7 @@
 package sk.tomsik68.mclauncher.util;
 
+import tk.freetobuild.mcunified.Main;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -9,12 +11,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public final class ExtractUtils {
-    private static final IExtractRules anarchy = new IExtractRules() {
-        @Override
-        public boolean accepts(ZipEntry entry) {
-            return true;
-        }
-    };
+    private static final IExtractRules anarchy = entry -> true;
 
     /**
      * Extracts a ZIP-compatible(even JAR) file to specified directory
@@ -39,7 +36,7 @@ public final class ExtractUtils {
         ZipFile zf = new ZipFile(jar);
         Enumeration<? extends ZipEntry> entries = zf.entries();
         while (entries.hasMoreElements()) {
-            ZipEntry zipEntry = (ZipEntry) entries.nextElement();
+            ZipEntry zipEntry = entries.nextElement();
             if (rules.accepts(zipEntry))
                 extractZipEntry(zf, zipEntry, dir);
         }
@@ -48,10 +45,11 @@ public final class ExtractUtils {
     private static void extractZipEntry(ZipFile zf, ZipEntry zipEntry, File dir) throws Exception {
         File destFile = new File(dir, zipEntry.getName());
         if (zipEntry.isDirectory())
-            destFile.mkdirs();
+            if(!destFile.mkdirs())
+                Main.logger.severe("Unable to create directory "+destFile.getPath());
         else {
-            destFile.getParentFile().mkdirs();
-            destFile.createNewFile();
+            if(!destFile.getParentFile().mkdirs())
+                Main.logger.severe("Unable to create directory "+destFile.getParentFile().getPath());
             BufferedInputStream bis = new BufferedInputStream(zf.getInputStream(zipEntry));
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(dir, zipEntry.getName())));
             long available = bis.available();

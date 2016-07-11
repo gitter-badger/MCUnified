@@ -6,15 +6,14 @@ import java.awt.*;
 /**
  * Created by liz on 6/30/16.
  */
-public class LabelListRenderer implements ListCellRenderer {
+public class LabelListRenderer implements ListCellRenderer<JLabel> {
     @Override
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel c = (JLabel)value;
-        c.setOpaque(false);
+    public Component getListCellRendererComponent(JList list, JLabel value, int index, boolean isSelected, boolean cellHasFocus) {
+        value.setOpaque(false);
         if(isSelected) {
-            c.setOpaque(true);
-            c.setBackground(UIManager.getColor("ComboBox.selectionBackground"));
+            value.setOpaque(true);
+            value.setBackground(UIManager.getColor("ComboBox.selectionBackground"));
         }
-        return c;
+        return value;
     }
 }

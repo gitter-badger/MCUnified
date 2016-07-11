@@ -6,7 +6,7 @@ import sk.tomsik68.mclauncher.api.common.IObserver;
 import java.util.HashSet;
 
 public class Observable<E> implements IObservable<E> {
-    private final HashSet<IObserver<E>> observers = new HashSet<IObserver<E>>();
+    private final HashSet<IObserver<E>> observers = new HashSet<>();
 
     @Override
     public void addObserver(IObserver<E> obs) {
@@ -21,7 +21,7 @@ public class Observable<E> implements IObservable<E> {
     @Override
     public void notifyObservers(E changedObj) {
         for (IObserver<E> obs : observers) {
-            obs.onUpdate(this, changedObj);
+            obs.onUpdate(changedObj);
         }
     }
 

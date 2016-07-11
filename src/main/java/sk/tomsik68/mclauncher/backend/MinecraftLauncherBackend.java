@@ -45,8 +45,7 @@ public final class MinecraftLauncherBackend {
         mcDownloadVersionList.addObserver(observer);
         mcDownloadVersionList.startDownload();
 
-        List<String> result = observer.getList();
-        return result;
+        return observer.getList();
     }
 
     /**
@@ -70,27 +69,24 @@ public final class MinecraftLauncherBackend {
      * @throws Exception - Network errors, JSON parsing, process failures
      */
     public ProcessBuilder launchMinecraft(ISession session, String versionID) throws Exception {
-        return launchMinecraft(session, null, versionID, DEFAULT_LAUNCH_SETTINGS, null);
+        return launchMinecraft(session, versionID);
     }
 
     /**
      * Returns a {@link ProcessBuilder} which has minecraft command inside of it. Use <code>ProcessBuilder.start()</code> to start the process.
      * @param session - Authentication session
-     * @param serverInfo - Server to connect to. May be null.
      * @param versionID - Version ID to run
-     * @param launchSettings - Launch settings(amount of RAM etc)
-     * @param moddingProfile - Modding profile information(overriding game jar etc.). May be null.
      * @return ProcessBuilder which has minecraft command inside of it. No other things are setup.
      * @throws Exception - Network errors, JSON parsing, process failures
      */
-    public ProcessBuilder launchMinecraft(ISession session, ServerInfo serverInfo, String versionID, ILaunchSettings launchSettings, IModdingProfile moddingProfile) throws Exception {
+    private ProcessBuilder launchMinecraft(ISession session, String versionID, IModdingProfile profile) throws Exception {
         if(versionID == null || versionID.length() == 0) throw new NullPointerException("versionID can't be null!");
 
         IVersion version = findVersion(versionID);
 
         if(session == null) throw new NullPointerException("session can't be null!");
-        if(launchSettings == null) throw new NullPointerException("launchSettings can't be null!");
-        List<String> launchCommand = version.getLauncher().getLaunchCommand(session, minecraftInstance, serverInfo, version, launchSettings, moddingProfile);
+        if(MinecraftLauncherBackend.DEFAULT_LAUNCH_SETTINGS == null) throw new NullPointerException("launchSettings can't be null!");
+        List<String> launchCommand = version.getLauncher().getLaunchCommand(session, minecraftInstance, null, version, MinecraftLauncherBackend.DEFAULT_LAUNCH_SETTINGS, profile);
         ProcessBuilder pb = new ProcessBuilder();
         pb.command(launchCommand);
         return pb;

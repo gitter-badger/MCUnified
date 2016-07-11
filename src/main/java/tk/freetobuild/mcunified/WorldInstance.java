@@ -1,7 +1,6 @@
 package tk.freetobuild.mcunified;
 
 import com.flowpowered.nbt.CompoundTag;
-import com.flowpowered.nbt.Tag;
 import com.flowpowered.nbt.stream.NBTInputStream;
 
 import javax.imageio.ImageIO;
@@ -14,7 +13,7 @@ import java.io.IOException;
  * Created by liz on 7/7/16.
  */
 public class WorldInstance {
-    private File dir;
+    private final File dir;
     private ImageIcon icon;
     private String name;
     public WorldInstance(File dir) {

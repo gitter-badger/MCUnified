@@ -11,7 +11,7 @@ import sk.tomsik68.mclauncher.api.login.ISession.Prop;
 final class YDUserObject {
 
     public final String id;
-    private final ArrayList<Prop> props = new ArrayList<Prop>();
+    private final ArrayList<Prop> props = new ArrayList<>();
 
     public YDUserObject(JSONObject object) {
         id = object.get("id").toString();

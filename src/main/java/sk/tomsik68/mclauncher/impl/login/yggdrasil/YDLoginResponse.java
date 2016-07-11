@@ -8,7 +8,7 @@ import java.util.HashMap;
 final class YDLoginResponse extends YDResponse {
     private final String sessionID, clientToken;
     private final YDPartialGameProfile selectedProfile;
-    private HashMap<String, YDPartialGameProfile> profiles = new HashMap<String, YDPartialGameProfile>();
+    private final HashMap<String, YDPartialGameProfile> profiles = new HashMap<>();
     private YDUserObject user;
 
     public YDLoginResponse(JSONObject json) {

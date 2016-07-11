@@ -12,12 +12,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 
-public class DialogNewAccount extends JDialog {
+class DialogNewAccount extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    public JTextField textField1;
-    public JPasswordField passwordField1;
+    private JTextField textField1;
+    private JPasswordField passwordField1;
 
     public DialogNewAccount() {
         try {
@@ -31,17 +31,9 @@ public class DialogNewAccount extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        buttonOK.addActionListener(e -> onOK());
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
+        buttonCancel.addActionListener(e -> onCancel());
 
 // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -76,7 +68,7 @@ public class DialogNewAccount extends JDialog {
         textField1 = new PlaceholderTextField();
         ((PlaceholderTextField) textField1).setPlaceholder("Username/E-mail");
         passwordField1 = new PlaceholderPasswordField();
-        ((PlaceholderPasswordField) passwordField1).setPlaceholder("Password");
+        ((PlaceholderPasswordField) passwordField1).setPlaceholder();
     }
 
     /**

@@ -19,9 +19,9 @@ import java.util.concurrent.ExecutionException;
  */
 public class ServerInfoPanel {
     public JPanel panel1;
-    public JLabel serverName;
-    public JEditorPane servermotd;
-    public JLabel playerCount;
+    private JLabel serverName;
+    private JEditorPane servermotd;
+    private JLabel playerCount;
 
     public ServerInfoPanel(ServerInfo info) {
         try {
@@ -37,8 +37,7 @@ public class ServerInfoPanel {
                 protected PingedServerInfo doInBackground() throws Exception {
                     try {
                         tries--;
-                        PingedServerInfo ping = ServerPinger.pingServer(info);
-                        return ping;
+                        return ServerPinger.pingServer(info);
                     } catch (Exception ex) {
                         return null;
                     }
@@ -66,9 +65,6 @@ public class ServerInfoPanel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void createUIComponents() {
     }
 
     {

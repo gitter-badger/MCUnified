@@ -4,14 +4,12 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.JSONStyle;
 import net.minidev.json.JSONValue;
 import sk.tomsik68.mclauncher.api.common.MCLauncherAPI;
-import sk.tomsik68.mclauncher.api.json.IJSONSerializable;
 import sk.tomsik68.mclauncher.api.login.IProfile;
 import sk.tomsik68.mclauncher.api.login.IProfileIO;
 import sk.tomsik68.mclauncher.impl.login.yggdrasil.YDAuthProfile;
 import sk.tomsik68.mclauncher.util.FileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 

@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * Created by liz on 6/30/16.
  */
-public class CurseAPI {
+class CurseAPI {
     public static SimpleCurseModInfo getSimpleMod(String url) {
         try {
             String path = Jsoup.connect(url).followRedirects(true).userAgent("Mozilla").execute().url().getPath();

@@ -92,7 +92,7 @@ public final class FileUtils {
 
     // this method is copied from original launcher, as the MD5-ing function
     // needs to be the same
-    public static String getMD5(File file) throws Exception {
+    private static String getMD5(File file) {
         DigestInputStream stream = null;
         try {
             stream = new DigestInputStream(new FileInputStream(file), MessageDigest.getInstance("MD5"));
@@ -104,7 +104,12 @@ public final class FileUtils {
         } catch (Exception ignored) {
             return null;
         } finally {
-            stream.close();
+            if(stream != null)
+                try {
+                    stream.close();
+                }catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
 
         return String.format("%1$032x", new BigInteger(1, stream.getMessageDigest().digest()));

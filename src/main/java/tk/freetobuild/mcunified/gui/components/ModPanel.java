@@ -21,9 +21,9 @@ import java.net.URL;
  */
 public class ModPanel {
     public JPanel panel1;
-    public JLabel modIcon;
-    public JLabel modTitle;
-    public JLabel modDescription;
+    private JLabel modIcon;
+    private JLabel modTitle;
+    private JLabel modDescription;
     private JLabel pageButton;
     private JLabel downloadButton;
 

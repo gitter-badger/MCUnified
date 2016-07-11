@@ -31,8 +31,8 @@ public class PlaceholderPasswordField extends JPasswordField {
                 .getMaxAscent() + getInsets().top);
     }
 
-    public void setPlaceholder(final String s) {
-        placeholder = s;
+    public void setPlaceholder() {
+        placeholder = "Password";
     }
 
 }

@@ -9,8 +9,8 @@ import java.util.logging.Logger;
  * Created by liz on 6/30/16.
  */
 public class ProgressMonitorListener implements PropertyChangeListener {
-    private JProgressBar status;
-    private Logger logger;
+    private final JProgressBar status;
+    private final Logger logger;
     public ProgressMonitorListener(Logger logger, JProgressBar status) {
         this.logger = logger;
         this.status = status;

@@ -11,5 +11,5 @@ public interface IJSONSerializable {
     /**
      * @return JSONObject which represents this object.
      */
-    public JSONObject toJSON();
+    JSONObject toJSON();
 }

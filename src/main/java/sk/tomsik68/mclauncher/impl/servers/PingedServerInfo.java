@@ -7,7 +7,7 @@ import sk.tomsik68.mclauncher.api.servers.ServerInfo;
  */
 public abstract class PingedServerInfo extends ServerInfo {
 
-    public PingedServerInfo(String ip, String name, String icon, int port) {
+    protected PingedServerInfo(String ip, String name, String icon, int port) {
         super(ip, name, icon, port);
     }
 

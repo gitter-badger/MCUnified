@@ -11,5 +11,5 @@ public interface IVersionInstallListener {
      *
      * @param version Newly installed version
      */
-    public void versionInstalled(IVersion version);
+    void versionInstalled(IVersion version);
 }

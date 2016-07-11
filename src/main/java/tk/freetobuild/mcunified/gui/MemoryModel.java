@@ -5,7 +5,7 @@ import javax.swing.*;
 /**
  * Created by liz on 7/8/16.
  */
-public class MemoryModel extends AbstractSpinnerModel {
+class MemoryModel extends AbstractSpinnerModel {
     private String value = "128 MB";
     public MemoryModel() {}
     public MemoryModel(int def) { value = format(def);}

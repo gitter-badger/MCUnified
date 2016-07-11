@@ -5,6 +5,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.jsoup.helper.StringUtil;
+import tk.freetobuild.mcunified.Main;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +18,8 @@ import java.util.jar.JarFile;
  */
 public class ForgeMod {
     private String name;
-    public String version;
-    private String description;
-    String[] authors;
+    private String version;
+    private String[] authors;
     private boolean enabled = true;
     private File mod;
     private File original;
@@ -43,7 +43,6 @@ public class ForgeMod {
                 JSONObject obj = (JSONObject)arr.get(0);
                 name = obj.get("name").toString();
                 version = obj.get("version").toString();
-                description = obj.get("description").toString();
                 authors = ((JSONArray) obj.get("authorList")).stream().map(s -> (String)s).toArray(String[]::new);
             } else {
                 throw new IllegalArgumentException("Invalid mod");
@@ -54,7 +53,8 @@ public class ForgeMod {
     }
     public void enable() {
         if(!enabled) {
-            mod.renameTo(original);
+            if(!mod.renameTo(original))
+                Main.logger.severe("Unable to rename file "+mod.getPath());
             mod = original;
             enabled = true;
         }
@@ -62,7 +62,8 @@ public class ForgeMod {
     public void disable() {
         if(enabled) {
             File newMod = new File(mod.getPath()+".disabled");
-            mod.renameTo(newMod);
+            if(!mod.renameTo(original))
+                Main.logger.severe("Unable to rename file "+mod.getPath());
             mod = newMod;
             enabled = false;
         }

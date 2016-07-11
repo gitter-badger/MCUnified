@@ -16,7 +16,7 @@ import java.io.*;
  */
 public class MainFrame extends JFrame {
     public MainFrame() {
-        super("MCUnified");
+        super("MCUnified - Alpha 0.0.1");
         try {
             setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
         } catch (IOException e) {
@@ -49,7 +49,7 @@ public class MainFrame extends JFrame {
         JMenuItem deleteInstance = new JMenuItem("Delete");
         deleteInstance.addActionListener(e -> {
             if(!Main.gui.instanceList.isSelectionEmpty()) {
-                UnifiedMCInstance mcinstance = (UnifiedMCInstance) Main.gui.instanceList.getSelectedValue();
+                UnifiedMCInstance mcinstance = Main.gui.instanceList.getSelectedValue();
                 Utils.recursiveDelete(mcinstance.getLocation());
                 ((DefaultListModel)Main.gui.instanceList.getModel()).removeElement(mcinstance);
             }

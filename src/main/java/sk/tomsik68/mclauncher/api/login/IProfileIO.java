@@ -12,7 +12,7 @@ public interface IProfileIO {
      * @return All profiles from this IO
      * @throws Exception I/O errors
      */
-    public IProfile[] read() throws Exception;
+    IProfile[] read() throws Exception;
 
     /**
      * <b>Over-writes</b> all profiles in this IO by those specified in array below
@@ -20,5 +20,5 @@ public interface IProfileIO {
      * @param profiles New profiles
      * @throws Exception I/O errors
      */
-    public void write(IProfile[] profiles) throws Exception;
+    void write(IProfile[] profiles) throws Exception;
 }

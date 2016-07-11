@@ -11,9 +11,9 @@ import java.util.List;
  * Created by liz on 6/29/16.
  */
 public class UnifiedModdingProfile implements IModdingProfile {
-    public List<File> injectBeforeLibs = new ArrayList<>();
-    public List<File> injectAfterLibs = new ArrayList<>();
-    public String mainClass = null;
+    private final List<File> injectBeforeLibs = new ArrayList<>();
+    private final List<File> injectAfterLibs = new ArrayList<>();
+    private String mainClass = null;
     public UnifiedModdingProfile injectBeforeLib(File... f) {
         injectBeforeLibs.addAll(Arrays.asList(f));
         return this;
@@ -27,21 +27,21 @@ public class UnifiedModdingProfile implements IModdingProfile {
         return this;
     }
     @Override
-    public File[] injectBeforeLibs(String separator) {
+    public File[] injectBeforeLibs() {
         File[] libs = new File[injectBeforeLibs.size()];
         libs = injectBeforeLibs.toArray(libs);
         return libs;
     }
 
     @Override
-    public File[] injectAfterLibs(String separator) {
+    public File[] injectAfterLibs() {
         File[] libs = new File[injectAfterLibs.size()];
         libs = injectAfterLibs.toArray(libs);
         return libs;
     }
 
     @Override
-    public boolean isLibraryAllowed(String libraryName) {
+    public boolean isLibraryAllowed() {
         return true;
     }
 

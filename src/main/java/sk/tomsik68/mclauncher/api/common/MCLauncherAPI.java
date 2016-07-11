@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  */
 public class MCLauncherAPI {
     public static final int MC_LAUNCHER_VERSION = 18;
-    public static Logger log = Logger.getLogger(MCLauncherAPI.class.getName());
+    public static final Logger log = Logger.getLogger(MCLauncherAPI.class.getName());
 
     static {
         Platform.getCurrentPlatform();

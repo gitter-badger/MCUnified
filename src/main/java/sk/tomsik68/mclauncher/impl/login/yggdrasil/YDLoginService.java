@@ -19,9 +19,10 @@ import sk.tomsik68.mclauncher.api.services.IServicesAvailability;
 import sk.tomsik68.mclauncher.impl.login.legacy.LegacyProfile;
 import sk.tomsik68.mclauncher.util.FileUtils;
 import sk.tomsik68.mclauncher.util.HttpUtils;
+import tk.freetobuild.mcunified.Main;
 
 public final class YDLoginService implements ILoginService {
-    public static UUID clientToken = UUID.randomUUID();
+    private static UUID clientToken = UUID.randomUUID();
     private static final String PASSWORD_LOGIN_URL = "https://authserver.mojang.com/authenticate";
     private static final String SESSION_LOGIN_URL = "https://authserver.mojang.com/refresh";
     private static final String SESSION_LOGOUT_URL = "https://authserver.mojang.com/invalidate";
@@ -59,7 +60,7 @@ public final class YDLoginService implements ILoginService {
     }
 
     private String doLoginPost(String url, IJSONSerializable request) throws YDServiceAuthenticationException {
-        String response = null;
+        String response;
         try {
             // Automatically Throws YDServiceAuthenticationException but will check for IOException and convert
             response = HttpUtils.doJSONAuthenticationPost(url, request);
@@ -89,18 +90,14 @@ public final class YDLoginService implements ILoginService {
         MCLauncherAPI.log.fine("Using session ID login");
         YDSessionLoginRequest request = new YDSessionLoginRequest(profile.getPassword(), clientToken.toString());
 
-        YDLoginResponse response = doCheckedLoginPost(SESSION_LOGIN_URL, request);
-
-        return response;
+        return doCheckedLoginPost(SESSION_LOGIN_URL, request);
     }
 
     private YDLoginResponse doPasswordLogin(IProfile profile) throws YDServiceAuthenticationException {
         MCLauncherAPI.log.fine("Using password-based login");
         YDPasswordLoginRequest request = new YDPasswordLoginRequest(profile.getName(), profile.getPassword(), clientToken.toString());
 
-        YDLoginResponse response = doCheckedLoginPost(PASSWORD_LOGIN_URL, request);
-
-        return response;
+        return doCheckedLoginPost(PASSWORD_LOGIN_URL, request);
     }
 
     @Override
@@ -113,7 +110,7 @@ public final class YDLoginService implements ILoginService {
         saveTo(file);
     }
 
-    public void saveTo(File file) throws Exception {
+    private void saveTo(File file) throws Exception {
         JSONObject obj = new JSONObject();
         if (file.exists()) {
             MCLauncherAPI.log.fine("The file already exists. YDLoginService won't overwrite client token.");
@@ -122,7 +119,8 @@ public final class YDLoginService implements ILoginService {
             fileReader.close();
             if (obj.containsKey("clientToken"))
                 return;
-            file.delete();
+            if(!file.delete())
+                Main.logger.severe("Unable to delete file"+file.getPath());
         }
         FileUtils.createFileSafely(file);
         MCLauncherAPI.log.fine("Writing client token...");
@@ -139,7 +137,7 @@ public final class YDLoginService implements ILoginService {
         loadFrom(file);
     }
 
-    public void loadFrom(File file) throws Exception {
+    private void loadFrom(File file) throws Exception {
         FileReader fileReader = new FileReader(file);
         JSONObject obj = (JSONObject) JSONValue.parse(fileReader);
         fileReader.close();

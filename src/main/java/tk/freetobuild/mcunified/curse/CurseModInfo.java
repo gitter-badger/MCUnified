@@ -7,7 +7,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,11 +15,11 @@ import java.util.stream.Collectors;
  * Created by liz on 6/30/16.
  */
 public class CurseModInfo {
-    private String id;
-    private String name;
-    private String author;
-    private String description;
-    private String icon;
+    private final String id;
+    private final String name;
+    private final String author;
+    private final String description;
+    private final String icon;
     public CurseModInfo(String id, String name, String author, String description, String icon) {
         this.id = id;
         this.name = name;
@@ -28,8 +27,6 @@ public class CurseModInfo {
         this.description = description;
         this.icon = icon;
     }
-
-    public String getId() { return id; }
 
     public String getName() {
         return name;
@@ -47,15 +44,6 @@ public class CurseModInfo {
         return icon;
     }
 
-    public JSONObject serialize() {
-        JSONObject object = new JSONObject();
-        object.put("id",id);
-        object.put("name",name);
-        object.put("author",author);
-        object.put("description",description);
-        object.put("icon",icon);
-        return object;
-    }
     public List<CurseArtifact> getFiles() {
         List<CurseArtifact> artifacts = new ArrayList<>();
         try {
@@ -80,9 +68,6 @@ public class CurseModInfo {
             e.printStackTrace();
         }
         return artifacts;
-    }
-    private void parseArtifact(Elements elements) {
-
     }
     public String getPage() {
         return "http://minecraft.curseforge.com/projects/"+id;

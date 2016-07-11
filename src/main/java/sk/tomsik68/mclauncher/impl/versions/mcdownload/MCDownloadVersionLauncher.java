@@ -2,7 +2,6 @@ package sk.tomsik68.mclauncher.impl.versions.mcdownload;
 
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONStyle;
-import net.minidev.json.JSONValue;
 import sk.tomsik68.mclauncher.api.common.ILaunchSettings;
 import sk.tomsik68.mclauncher.api.common.MCLauncherAPI;
 import sk.tomsik68.mclauncher.api.common.mc.MinecraftInstance;
@@ -13,24 +12,25 @@ import sk.tomsik68.mclauncher.api.versions.IVersion;
 import sk.tomsik68.mclauncher.api.versions.IVersionLauncher;
 import sk.tomsik68.mclauncher.util.StringSubstitutor;
 import sk.tomsik68.mclauncher.api.login.ISession.Prop;
+import tk.freetobuild.mcunified.Main;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 final class MCDownloadVersionLauncher implements IVersionLauncher {
 
     private String[] getMinecraftArguments(MinecraftInstance mc, File assetsDir,
-                                          ISession session, ILaunchSettings settings,
-                                          MCDownloadVersion version) {
+                                           ISession session,
+                                           MCDownloadVersion version) {
         // TODO tooo lazy to finish options
         String args = version.getMinecraftArgs();
-        StringSubstitutor subst = new StringSubstitutor("${%s}");
+        StringSubstitutor subst = new StringSubstitutor();
         subst.setVariable("auth_session", session.getSessionID());
         subst.setVariable("auth_access_token", session.getSessionID());
         subst.setVariable("auth_player_name", session.getUsername());
@@ -96,7 +96,7 @@ final class MCDownloadVersionLauncher implements IVersionLauncher {
         }
         MCLauncherAPI.log.fine("Building the launch command...");
         // build the huge command!
-        ArrayList<String> command = new ArrayList<String>();
+        ArrayList<String> command = new ArrayList<>();
         // prefix
         if (settings.getCommandPrefix() != null)
             command.addAll(settings.getCommandPrefix());
@@ -125,7 +125,7 @@ final class MCDownloadVersionLauncher implements IVersionLauncher {
         final String LIBRARY_SEPARATOR = System.getProperty("path.separator");
         //// mods can inject JARs before libraries
         if(moddingProfileSpecified) {
-            File[] customFiles = mods.injectBeforeLibs(LIBRARY_SEPARATOR);
+            File[] customFiles = mods.injectBeforeLibs();
             if(customFiles != null) {
                 MCLauncherAPI.log.fine("Injecting custom libraries before library list");
                 for (File file : customFiles) {
@@ -137,12 +137,13 @@ final class MCDownloadVersionLauncher implements IVersionLauncher {
         //// now add library files
         for (Library lib : version.getLibraries()) {
             // each library has to be compatible, installed and allowed by modding profile
-            if (lib.isCompatible() && (!moddingProfileSpecified || mods.isLibraryAllowed(lib.getName()))) {
+            if (lib.isCompatible() && (!moddingProfileSpecified || mods.isLibraryAllowed())) {
                 if (!libraryProvider.isInstalled(lib)) {
                     try {
                         File dest = libraryProvider.getLibraryFile(lib);
                         if(!dest.getParentFile().exists())
-                            dest.getParentFile().mkdirs();
+                            if(!dest.getParentFile().mkdirs())
+                                Main.logger.severe("Unable to create directory "+dest.getParentFile().getPath());
                         Files.copy(new URL(lib.getDownloadURL()).openStream(),dest.toPath());
                     } catch (IOException ex) {
                         throw new FileNotFoundException(String.format("Library file '%s' wasn't found and unable to download.",lib.getPath()));
@@ -156,7 +157,7 @@ final class MCDownloadVersionLauncher implements IVersionLauncher {
         }
         //// mods can inject JARs after libraries
         if(moddingProfileSpecified) {
-            File[] customFiles = mods.injectAfterLibs(LIBRARY_SEPARATOR);
+            File[] customFiles = mods.injectAfterLibs();
             if(customFiles != null) {
                 MCLauncherAPI.log.fine("Injecting custom libraries after library list");
                 for (File file : customFiles) {
@@ -182,7 +183,7 @@ final class MCDownloadVersionLauncher implements IVersionLauncher {
         }
         command.add(mainClass);
         // create minecraft arguments
-        String[] arguments = getMinecraftArguments(mc, resourcesInstaller.getAssetsDirectory(), session, settings,
+        String[] arguments = getMinecraftArguments(mc, resourcesInstaller.getAssetsDirectory(), session,
                 version);
         // give mods opportunity to change minecraft arguments
         if(moddingProfileSpecified){
@@ -193,9 +194,7 @@ final class MCDownloadVersionLauncher implements IVersionLauncher {
             }
         }
         // now append all minecraft arguments to the command
-        for (String arg : arguments) {
-            command.add(arg);
-        }
+        Collections.addAll(command, arguments);
         // if server is specified, append --server and --port
         if (server != null) {
             command.add("--server");

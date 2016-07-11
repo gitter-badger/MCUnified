@@ -12,9 +12,9 @@ import java.net.URLEncoder;
 
 public final class LegacyLoginService implements ILoginService {
     private static final LegacySessionFactory factory = new LegacySessionFactory();
-    private static final String LOGIN_URL = "https://login.minecraft.net/";
+    public static final String LOGIN_URL = "https://login.minecraft.net/";
 
-    public LegacyLoginService() {
+    private LegacyLoginService() {
     }
 
     private static String encode(String s) throws UnsupportedEncodingException {
@@ -29,11 +29,10 @@ public final class LegacyLoginService implements ILoginService {
     @Override
     public ISession login(IProfile profile) throws Exception {
         MCLauncherAPI.log.fine("Logging in with legacy service...");
-        String loginResponse = HttpUtils.securePostWithKey(LOGIN_URL, LegacyLoginService.class.getResourceAsStream("minecraft.key"), "user="
+        String loginResponse = HttpUtils.securePostWithKey(LegacyLoginService.class.getResourceAsStream("minecraft.key"), "user="
                 + encode(profile.getName()) + "&password=" + encode(profile.getPassword()) + "&version=13");
         MCLauncherAPI.log.fine("Got response! Parsing response...");
-        ISession result = factory.createSession(loginResponse.split(":"));
-        return result;
+        return factory.createSession(loginResponse.split(":"));
     }
 
     @Override

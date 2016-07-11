@@ -13,7 +13,7 @@ import java.io.IOException;
 public class AboutDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonCancel;
-    public JEditorPane textArea1;
+    private JEditorPane textArea1;
 
     public AboutDialog() {
         try {

@@ -9,17 +9,17 @@ public interface IProfile {
     /**
      * @return Username from this profile
      */
-    public String getName();
+    String getName();
 
     /**
      *
      * @return URL of this player's skin
      */
-    public String getSkinURL();
+    String getSkinURL();
 
     /**
      * @return Password from this profile
      */
-    public String getPassword();
+    String getPassword();
 
 }

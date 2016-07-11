@@ -9,14 +9,13 @@ import java.util.Map.Entry;
  */
 public final class StringSubstitutor {
     private final String template;
-    private HashMap<String, String> variables = new HashMap<String, String>();
+    private final HashMap<String, String> variables = new HashMap<>();
 
     /**
      * Creates a StringSubstitutor that replaces variable in a way like you specify in template.
-     * @param tmp - for example <code>${%s}</code> will substitute %s for key and then replace it by value
      */
-    public StringSubstitutor(String tmp) {
-        template = tmp;
+    public StringSubstitutor() {
+        template = "${%s}";
     }
 
     public String substitute(String s) {
