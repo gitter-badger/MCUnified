@@ -10,13 +10,14 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.util.Scanner;
 
 /**
  * Created by liz on 6/22/16.
  */
 public class MainFrame extends JFrame {
     public MainFrame() {
-        super("MCUnified - Alpha 0.0.1");
+        super("MCUnified - "+new Scanner(MainFrame.class.getResourceAsStream("/version.txt")).useDelimiter("\\Z").next());
         try {
             setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/head.png")));
         } catch (IOException e) {
