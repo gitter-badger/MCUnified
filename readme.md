@@ -1,6 +1,8 @@
 # MCUnified
 ###### Unifying Minecraft launchers everywhere.
 
+[![Join the chat at https://gitter.im/lizfransen/MCUnified](https://badges.gitter.im/lizfransen/MCUnified.svg)](https://gitter.im/lizfransen/MCUnified?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Features
 - [X] Multiple instances
 - [X] Multiple accounts
